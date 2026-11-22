@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VANTRA STUDIO · Radio Now Playing</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&family=Yellowtail&display=swap" rel="stylesheet">
+<style>
+:root{--acc:#ff3fa4;--coral:#ff6b5b;--indigo:#5b4bff;--bg:#0b0a16;--panel:#14132a;--line:#2a2850;--text:#eceaff;--muted:#a3a0c8;--ok:#3ddc84;--bad:#ff5f56}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',system-ui,sans-serif;font-size:14px}
+.layout{display:flex;height:100vh}
+aside{width:340px;min-width:340px;height:100vh;display:flex;flex-direction:column;background:var(--panel);border-right:1px solid var(--line)}
+.logo{padding:16px 20px;border-bottom:1px solid var(--line)}
+.logo b{display:block;font-size:16px;letter-spacing:6px}.logo b span{color:var(--coral);margin:0 6px}
+.logo em{font-style:normal;color:var(--muted);font-size:12px}
+.scroll{flex:1;overflow-y:auto;padding:0 20px 24px;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.sec{margin-top:18px}
+.sec h3{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--acc);margin-bottom:10px;display:flex;gap:8px;align-items:center}
+.sec h3::after{content:"";flex:1;height:1px;background:var(--line)}
+label{display:block;font-size:12px;color:var(--muted);margin:10px 0 5px}
+input[type=text],input[type=number],input[type=password],select{width:100%;background:#0d0c1d;border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--text);font:inherit;outline:none}
+input:focus,select:focus{border-color:var(--acc)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.colors{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.colors input{width:100%;height:30px;padding:2px;background:#0d0c1d;border:1px solid var(--line);border-radius:6px}
+.colors small{display:block;font-size:10px;color:var(--muted);text-align:center;margin-top:3px}
+.toggle{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.toggle input{width:18px;height:18px;accent-color:var(--acc)}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.hint{font-size:12px;color:var(--muted);line-height:1.5;margin-top:8px;padding:10px 12px;border-radius:8px;background:#0d0c1d;border:1px dashed var(--line)}
+.hint b{color:var(--text)}.hint code{font-family:'JetBrains Mono';font-size:11px;color:var(--acc)}
+.src{display:none}.src.on{display:block}
+.status{margin-top:10px;font-size:12px;display:flex;gap:8px;align-items:flex-start}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--muted);margin-top:4px;flex-shrink:0}
+.status.ok i{background:var(--ok);box-shadow:0 0 6px var(--ok)}.status.bad i{background:var(--bad)}
+.stations{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.st{padding:10px;border-radius:10px;border:2px solid var(--line);background:#0d0c1d;cursor:pointer;text-align:left;color:var(--text);font:inherit}
+.st b{display:block;font-family:Yellowtail,cursive;font-size:22px;font-weight:400;line-height:1.1}
+.st small{color:var(--muted)}
+.st.on{border-color:var(--acc)}
+.btn{width:100%;margin-top:10px;padding:10px;border:0;border-radius:10px;background:var(--acc);color:#0b0a16;font:inherit;font-weight:700;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.url{margin-top:10px;padding:10px;border-radius:8px;background:#0d0c1d;border:1px solid var(--line);font-family:'JetBrains Mono';font-size:11px;color:var(--acc);word-break:break-all;max-height:110px;overflow:auto}
+main{flex:1;position:relative;overflow:hidden;background:linear-gradient(180deg,#1a0533 0%,#4a0f5c 42%,#c2306e 64%,#ff8a3d 76%,#12061f 76.2%,#12061f 100%)}
+main::before{content:"";position:absolute;left:50%;top:22%;width:360px;height:360px;transform:translateX(-50%);border-radius:50%;background:linear-gradient(180deg,#ffd36b,#ff8a3d 50%,#ff3fa4);-webkit-mask:linear-gradient(#000 78%,transparent 78%);mask:linear-gradient(#000 78%,transparent 78%);opacity:.9}
+main::after{content:"";position:absolute;left:-20%;right:-20%;bottom:0;height:24%;background-image:linear-gradient(rgba(255,63,164,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(45,226,230,.4) 1px,transparent 1px);background-size:60px 60px;transform:perspective(500px) rotateX(55deg);transform-origin:bottom}
+.top{position:absolute;left:0;right:0;top:0;height:44px;display:flex;align-items:center;gap:12px;padding:0 18px;background:rgba(0,0,0,.6);z-index:5;font-size:13px}
+.live{background:#ff2e4d;font-weight:700;font-size:11px;letter-spacing:2px;padding:2px 8px;border-radius:4px}
+.wrap{position:absolute;left:40px;bottom:calc(24% + 30px);z-index:4;width:832px;height:176px}
+.wrap iframe{width:520px;height:110px;border:0;transform:scale(1.6);transform-origin:0 0;background:transparent}
+.tests{position:absolute;right:24px;top:64px;z-index:5;display:flex;flex-direction:column;gap:8px;width:230px}
+.tests .btn{margin:0}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(80px);background:var(--panel);border:1px solid var(--acc);padding:8px 16px;border-radius:8px;transition:transform .3s;z-index:9}
+.toast.show{transform:translateX(-50%)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside>
+  <div class="logo"><b>VANTRA<span>·</span>STUDIO</b><em>Radio Now Playing — settings & preview</em></div>
+  <div class="scroll">
+
+    <div class="sec"><h3>Station</h3>
+      <div class="stations" id="stations">
+        <button class="st on" data-st="neon"><b style="color:#ff3fa4">Neon FM</b><small>103.5 · synthwave</small></button>
+        <button class="st" data-st="rock"><b style="color:#ffd166">Thunder Rock</b><small>98.7 · rock</small></button>
+        <button class="st" data-st="hiphop"><b style="color:#ffd700">Block Party</b><small>105.9 · hip-hop</small></button>
+        <button class="st" data-st="lofi"><b style="color:#d6c6f2">Chill Wave</b><small>88.1 · lo-fi</small></button>
+      </div>
+      <input type="hidden" data-key="station" id="station" value="neon">
+      <div class="row2">
+        <div><label>Station name</label><input type="text" data-key="stationName" placeholder="Neon FM"></div>
+        <div><label>Frequency (88–108)</label><input type="text" data-key="frequency" placeholder="103.5"></div>
+      </div>
+      <label>Your own colors (optional)</label>
+      <div class="colors">
+        <div><input type="color" data-key="nameColor" data-optional value="#ff3fa4"><small>Name</small></div>
+        <div><input type="color" data-key="lcdColor" data-optional value="#2de2e6"><small>LCD</small></div>
+        <div><input type="color" data-key="needleColor" data-optional value="#ff8a3d"><small>Needle</small></div>
+        <div><input type="color" data-key="eqFrom" data-optional value="#ff6b5b"><small>EQ low</small></div>
+        <div><input type="color" data-key="eqTo" data-optional value="#ff2e88"><small>EQ high</small></div>
+      </div>
+      <div class="toggle"><span>Use my own colors</span><input type="checkbox" id="own-colors"></div>
+    </div>
+
+    <div class="sec"><h3>Music source</h3>
+      <select data-key="source" id="source">
+        <option value="lastfm" selected>Last.fm (Spotify, Apple Music… via scrobbling)</option>
+        <option value="tuna">Tuna (OBS plugin)</option>
+        <option value="streamerbot">Streamer.bot</option>
+        <option value="manual">Manual text</option>
+      </select>
+
+      <div class="src" data-src="lastfm">
+        <div class="row2">
+          <div><label>Last.fm username</label><input type="text" data-key="lastfmUser" placeholder="your_name"></div>
+          <div><label>Last.fm API key</label><input type="password" data-key="lastfmKey" placeholder="32 characters"></div>
+        </div>
+        <div class="hint"><b>Free, 2 minutes:</b> create a Last.fm account, connect Spotify in <b>Settings › Applications</b>, then get an API key at <code>last.fm/api/account/create</code> (any app name). Works in OBS and StreamElements.</div>
+      </div>
+      <div class="src" data-src="tuna">
+        <label>Tuna web server port</label><input type="number" data-key="tunaPort" value="1608">
+        <div class="hint">Install the free <b>Tuna</b> plugin for OBS, choose your player (Spotify, YouTube Music…), and turn on its <b>web server</b> (port <code>1608</code>). Works when OBS runs on the same PC.</div>
+      </div>
+      <div class="src" data-src="streamerbot">
+        <label>Streamer.bot WebSocket address</label><input type="text" data-key="streamerbotUrl" value="ws://127.0.0.1:8080/">
+        <div class="hint">Turn on <b>Servers › WebSocket Server</b> in Streamer.bot. In your "song changed" action, add a C# line:<br><code>CPH.WebsocketBroadcastJson("{\"title\":\"...\",\"artist\":\"...\"}");</code></div>
+      </div>
+      <div class="src" data-src="manual">
+        <label>Title</label><input type="text" data-key="manualTitle" value="Midnight Drive">
+        <label>Artist</label><input type="text" data-key="manualArtist" value="Vantra Studio">
+        <div class="hint">Type what's playing. Change it any time: the radio tunes to the new title.</div>
+      </div>
+      <div class="status" id="status"><i></i><span>Preview ready.</span></div>
+    </div>
+
+    <div class="sec"><h3>Behaviour</h3>
+      <label>Text when nothing plays</label><input type="text" data-key="idleText" value="Waiting for the next track…">
+      <div class="toggle"><span>Hide the radio when nothing plays</span><input type="checkbox" data-key="hideWhenIdle"></div>
+      <div class="toggle"><span>Radio static sound on track change</span><input type="checkbox" data-key="staticSound" checked></div>
+      <label>Static volume</label><input type="range" data-key="staticVolume" min="0" max="100" value="30">
+      <label>Scrolling speed for long titles</label><input type="range" data-key="scrollSpeed" min="15" max="90" value="40">
+      <label>Check for a new track every (seconds)</label><input type="number" data-key="pollSeconds" value="8" min="3">
+    </div>
+
+    <div class="sec"><h3>Add it to OBS</h3>
+      <div class="url" id="url">…</div>
+      <button class="btn" id="copy">Copy the OBS link</button>
+      <div class="hint">OBS › <b>+</b> › <b>Browser</b> › paste the link › Width <b>520</b>, Height <b>110</b> (or 1040 × 220 for a sharper, bigger banner — it scales by itself).<br>StreamElements users: see <b>HOW-TO-USE.html</b>.</div>
+    </div>
+  </div>
+</aside>
+
+<main>
+  <div class="top"><span class="live">LIVE</span><span>Preview — your stream</span></div>
+  <div class="tests">
+    <button class="btn" id="t-next">♪ Simulate a new track</button>
+    <button class="btn ghost" id="t-long">♪ Very long title</button>
+    <button class="btn ghost" id="t-idle">■ Nothing playing</button>
+  </div>
+  <div class="wrap"><iframe id="frame" src="widget/index.html" title="Radio preview"></iframe></div>
+</main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const frame = document.getElementById('frame');
+const send = m => { try { frame.contentWindow.postMessage(m, '*'); } catch (_) {} };
+const controls = [...document.querySelectorAll('[data-key]')];
+const val = el => el.type === 'checkbox' ? el.checked : (el.type === 'number' || el.type === 'range') ? +el.value : el.value;
+const INITIAL = Object.fromEntries(controls.map(el => [el.dataset.key, val(el)]));
+const ownColors = document.getElementById('own-colors');
+
+function config() {
+  const c = Object.fromEntries(controls.map(el => [el.dataset.key, val(el)]));
+  if (!ownColors.checked) ['nameColor', 'lcdColor', 'needleColor', 'eqFrom', 'eqTo'].forEach(k => c[k] = '');
+  return c;
+}
+
+function push() {
+  const src = document.getElementById('source').value;
+  document.querySelectorAll('.src').forEach(s => s.classList.toggle('on', s.dataset.src === src));
+  send({ type: 'cmd:config', config: config() });
+  updateUrl();
+}
+
+controls.forEach(el => el.addEventListener(el.type === 'checkbox' || el.tagName === 'SELECT' || el.type === 'color' ? 'change' : 'input', push));
+ownColors.addEventListener('change', push);
+document.querySelectorAll('.st').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.st').forEach(x => x.classList.toggle('on', x === b));
+  document.getElementById('station').value = b.dataset.st;
+  push();
+}));
+
+window.addEventListener('message', ({ data }) => {
+  if (data?.type === 'radio:ready') push();
+  if (data?.type === 'radio:status') {
+    const s = document.getElementById('status');
+    s.className = 'status ' + (data.ok ? 'ok' : 'bad');
+    s.querySelector('span').textContent = data.msg;
+  }
+});
+
+const DEMO = [['Neon Heartbeat', 'Laser Coast'], ['Midnight Drive', 'Vantra Studio'], ['Ocean Avenue', 'Sunset Riders'], ['Glass City Lights', 'Nova & The Palms']];
+let di = 0;
+document.getElementById('t-next').onclick = () => { di = (di + 1) % DEMO.length; send({ type: 'cmd:track', title: DEMO[di][0], artist: DEMO[di][1] }); };
+document.getElementById('t-long').onclick = () => send({ type: 'cmd:track', title: 'Ocean Boulevard Sunset (Extended Night Drive Mix) [Remastered]', artist: 'The Palm Street Collective feat. Laser Coast' });
+document.getElementById('t-idle').onclick = () => send({ type: 'cmd:idle' });
+
+function widgetBase() {
+  const here = location.href.split(/[?#]/)[0].replace(/index\.html$/, '');
+  return (here.endsWith('/') ? here : here + '/') + 'widget/index.html';
+}
+function updateUrl() {
+  const c = config(), q = new URLSearchParams();
+  Object.keys(c).forEach(k => { if (c[k] !== INITIAL[k] && !(c[k] === '' && !INITIAL[k])) q.set(k, String(c[k])); });
+  if (!ownColors.checked) ['nameColor', 'lcdColor', 'needleColor', 'eqFrom', 'eqTo'].forEach(k => q.delete(k));
+  if (!q.has('source')) q.set('source', c.source);
+  document.getElementById('url').textContent = widgetBase() + '?' + q;
+}
+document.getElementById('copy').onclick = () => {
+  const t = document.getElementById('url').textContent;
+  const ok = () => toast('OBS link copied!');
+  if (navigator.clipboard?.writeText) navigator.clipboard.writeText(t).then(ok, () => toast('Select the link and copy it manually'));
+  else toast('Select the link and copy it manually');
+};
+function toast(m) { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); }
+frame.addEventListener('load', () => setTimeout(push, 80));
+push();
+</script>
+</body>
+</html>

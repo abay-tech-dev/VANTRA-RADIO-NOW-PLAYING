@@ -1,0 +1,230 @@
+/* =====================================================
+   VANTRA STUDIO — Radio Now Playing · style.css
+   520 x 110 banner: retro car radio · station + track · 12-bar equalizer
+   ===================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Share+Tech+Mono&family=Yellowtail&display=swap');
+
+:root {
+  /* Set by the station preset (or your own colors) */
+  --name:    #ff3fa4;   /* station name */
+  --lcd:     #2de2e6;   /* LCD digits — cyan */
+  --needle:  #ff8a3d;   /* dial needle — orange */
+  --eq-from: #ff6b5b;   /* equalizer bottom — coral */
+  --eq-to:   #ff2e88;   /* equalizer top — hot pink */
+  --bg1:     #1a0b2e;
+  --bg2:     #2a0f3d;
+  --edge:    #ff3fa4;
+  --text:    #ffffff;
+  --muted:   rgba(255, 255, 255, .7);
+  --scale:   1;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { background: transparent; overflow: hidden; width: 100%; height: 100%; }
+
+#stage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+/* ── The 520 x 110 banner (scaled to fit the browser source) ── */
+.radio {
+  position: relative;
+  flex-shrink: 0;
+  width: 520px;
+  height: 110px;
+  transform: scale(var(--scale));
+  transform-origin: 0 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 14px 8px 8px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--bg1), var(--bg2));
+  border: 2px solid color-mix(in srgb, var(--edge) 70%, transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--edge) 45%, transparent), inset 0 0 18px rgba(0,0,0,.45);
+  font-family: Inter, sans-serif;
+  color: var(--text);
+  overflow: hidden;
+  transition: opacity .4s ease, transform .4s ease;
+}
+.radio.idle-hidden { opacity: 0; }
+
+/* =====================================================
+   LEFT — retro car radio
+   ===================================================== */
+.deck {
+  position: relative;
+  flex-shrink: 0;
+  width: 170px;
+  height: 94px;
+  border-radius: 12px;
+  padding: 7px 26px 6px;
+  background: linear-gradient(180deg, #2b2b33 0%, #15151b 55%, #0d0d12 100%);
+  border: 2px solid #5a5a66;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.25), inset 0 -2px 6px rgba(0,0,0,.6), 0 2px 6px rgba(0,0,0,.5);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Chrome knobs on both sides */
+.knob {
+  position: absolute;
+  top: 24px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f4f4f8, #8c8c99 45%, #3b3b44 80%);
+  box-shadow: 0 1px 2px rgba(0,0,0,.7);
+}
+.knob::after { content: ""; position: absolute; left: 7px; top: 2px; width: 2px; height: 5px; background: #2b2b33; border-radius: 1px; }
+.knob.l { left: 5px; }
+.knob.r { right: 5px; transform: rotate(140deg); }
+
+/* LCD window */
+.lcd {
+  position: relative;
+  height: 42px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #05121a, #020a0f);
+  border: 1px solid #000;
+  box-shadow: inset 0 0 10px rgba(0,0,0,.9);
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 5px;
+  padding-top: 3px;
+  overflow: hidden;
+  font-family: 'Share Tech Mono', monospace;
+  color: var(--lcd);
+  text-shadow: 0 0 6px var(--lcd), 0 0 12px color-mix(in srgb, var(--lcd) 60%, transparent);
+}
+.lcd::after { /* LCD pixel grid */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.25) 0 1px, transparent 1px 3px);
+  pointer-events: none;
+}
+.freq { font-size: 30px; line-height: 36px; letter-spacing: 1px; }
+.band { font-size: 13px; opacity: .85; }
+.st   { position: absolute; left: 6px; top: 3px; font-size: 9px; opacity: .8; }
+
+/* Frequency dial */
+.dial {
+  position: relative;
+  height: 30px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #1b130a, #0e0a06);
+  border: 1px solid #000;
+  box-shadow: inset 0 0 6px rgba(0,0,0,.9);
+  overflow: hidden;
+}
+.scale { position: absolute; left: 8px; right: 8px; top: 2px; height: 10px; }
+.scale span {
+  position: absolute;
+  transform: translateX(-50%);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 8px;
+  line-height: 10px;
+  color: #e9d8b5;
+  opacity: .85;
+}
+.ticks {
+  position: absolute;
+  left: 8px; right: 8px; bottom: 3px;
+  height: 12px;
+  background:
+    repeating-linear-gradient(90deg, rgba(233,216,181,.85) 0 1px, transparent 1px 20%),
+    repeating-linear-gradient(90deg, rgba(233,216,181,.45) 0 1px, transparent 1px 5%);
+  background-size: 100% 100%, 100% 55%;
+  background-repeat: no-repeat;
+  background-position: 0 0, 0 100%;
+}
+.needle {
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  left: 50%;
+  width: 3px;
+  margin-left: -1px;
+  border-radius: 2px;
+  background: var(--needle);
+  box-shadow: 0 0 6px var(--needle), 0 0 12px color-mix(in srgb, var(--needle) 60%, transparent);
+}
+
+/* Radio static (shown 400 ms while tuning) */
+canvas.static { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; z-index: 3; mix-blend-mode: screen; }
+.tuning canvas.static { opacity: .75; }
+
+/* =====================================================
+   CENTER — station name + now playing
+   ===================================================== */
+.info {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 94px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.station {
+  font-family: Yellowtail, cursive;
+  font-size: 30px;
+  line-height: 34px;
+  color: var(--name);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--name) 65%, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 2px 2px;
+}
+
+.line {
+  position: relative;
+  height: 22px;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 16px;
+  line-height: 22px;
+  -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 18px), transparent);
+  mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 18px), transparent);
+}
+.line.title  { font-weight: 700; color: var(--text); }
+.line.artist { font-weight: 400; color: var(--muted); }
+
+.marquee { display: inline-block; padding-right: 2px; transition: opacity .18s ease, transform .18s ease; }
+.marquee.scroll { animation: marquee var(--dur, 10s) linear infinite; padding-right: 0; }
+.marquee .gap { display: inline-block; width: 48px; }
+@keyframes marquee {
+  0%, 12% { transform: translateX(0); }
+  100%    { transform: translateX(var(--shift)); }
+}
+
+.tuning .marquee { opacity: 0; transform: translateY(4px); }
+
+/* =====================================================
+   RIGHT — 12-bar equalizer
+   ===================================================== */
+.eq {
+  flex-shrink: 0;
+  width: 106px;
+  height: 74px;
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+}
+.eq i {
+  flex: 1;
+  height: 8%;
+  border-radius: 2px 2px 1px 1px;
+  background: linear-gradient(0deg, var(--eq-from), var(--eq-to));
+  box-shadow: 0 0 6px color-mix(in srgb, var(--eq-to) 45%, transparent);
+  transition: height .09s linear;
+}

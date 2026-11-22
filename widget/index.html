@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VANTRA STUDIO — Radio Now Playing</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- WIDGET:START -->
+<div id="stage">
+  <div id="radio-widget" class="radio">
+
+    <!-- Left: retro car radio -->
+    <div class="deck">
+      <span class="knob l"></span><span class="knob r"></span>
+      <div class="lcd">
+        <canvas class="static" id="lcd-static" width="120" height="40"></canvas>
+        <span class="st">ST</span>
+        <span class="freq" id="freq">103.5</span><span class="band">FM</span>
+      </div>
+      <div class="dial">
+        <div class="scale">
+          <span style="left:0%">88</span><span style="left:20%">92</span><span style="left:40%">96</span>
+          <span style="left:60%">100</span><span style="left:80%">104</span><span style="left:100%">108</span>
+        </div>
+        <div class="ticks"></div>
+        <div class="needle" id="needle"></div>
+      </div>
+    </div>
+
+    <!-- Center: station + now playing -->
+    <div class="info">
+      <canvas class="static" id="info-static" width="200" height="80"></canvas>
+      <div class="station" id="station">Neon FM</div>
+      <div class="line title"><span class="marquee" id="title">Tuning in…</span></div>
+      <div class="line artist"><span class="marquee" id="artist"></span></div>
+    </div>
+
+    <!-- Right: equalizer -->
+    <div class="eq" id="eq"></div>
+
+  </div>
+</div>
+<!-- WIDGET:END -->
+  <script src="script.js"></script>
+</body>
+</html>

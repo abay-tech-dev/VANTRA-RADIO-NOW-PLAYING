@@ -1,0 +1,155 @@
+{
+  "station": {
+    "type": "dropdown",
+    "label": "Station style",
+    "value": "neon",
+    "group": "Station",
+    "options": {
+      "neon": "Neon FM 103.5 (synthwave)",
+      "rock": "Thunder Rock 98.7 (rock)",
+      "hiphop": "Block Party 105.9 (hip-hop)",
+      "lofi": "Chill Wave 88.1 (lo-fi)"
+    }
+  },
+  "stationName": {
+    "type": "text",
+    "label": "Station name (empty = style name)",
+    "value": "",
+    "group": "Station"
+  },
+  "frequency": {
+    "type": "text",
+    "label": "Frequency 88–108 (empty = style frequency)",
+    "value": "",
+    "group": "Station"
+  },
+  "source": {
+    "type": "dropdown",
+    "label": "Music source",
+    "value": "lastfm",
+    "group": "Music source",
+    "options": {
+      "lastfm": "Last.fm (Spotify via scrobbling)",
+      "tuna": "Tuna (OBS plugin, same PC)",
+      "streamerbot": "Streamer.bot",
+      "manual": "Manual text"
+    }
+  },
+  "lastfmUser": {
+    "type": "text",
+    "label": "Last.fm username",
+    "value": "",
+    "group": "Music source"
+  },
+  "lastfmKey": {
+    "type": "text",
+    "label": "Last.fm API key",
+    "value": "",
+    "group": "Music source"
+  },
+  "tunaPort": {
+    "type": "number",
+    "label": "Tuna web server port",
+    "value": 1608,
+    "group": "Music source"
+  },
+  "streamerbotUrl": {
+    "type": "text",
+    "label": "Streamer.bot WebSocket address",
+    "value": "ws://127.0.0.1:8080/",
+    "group": "Music source"
+  },
+  "manualTitle": {
+    "type": "text",
+    "label": "Manual mode — title",
+    "value": "Midnight Drive",
+    "group": "Music source"
+  },
+  "manualArtist": {
+    "type": "text",
+    "label": "Manual mode — artist",
+    "value": "Vantra Studio",
+    "group": "Music source"
+  },
+  "pollSeconds": {
+    "type": "slider",
+    "label": "Check for a new track every (seconds)",
+    "value": 8,
+    "min": 3,
+    "max": 30,
+    "step": 1,
+    "group": "Music source"
+  },
+  "idleText": {
+    "type": "text",
+    "label": "Text when nothing plays",
+    "value": "Waiting for the next track…",
+    "group": "Behaviour"
+  },
+  "hideWhenIdle": {
+    "type": "checkbox",
+    "label": "Hide the radio when nothing plays",
+    "value": false,
+    "group": "Behaviour"
+  },
+  "staticSound": {
+    "type": "checkbox",
+    "label": "Radio static sound on track change",
+    "value": true,
+    "group": "Behaviour"
+  },
+  "staticVolume": {
+    "type": "slider",
+    "label": "Static volume",
+    "value": 30,
+    "min": 0,
+    "max": 100,
+    "step": 1,
+    "group": "Behaviour"
+  },
+  "scrollSpeed": {
+    "type": "slider",
+    "label": "Scrolling speed for long titles",
+    "value": 40,
+    "min": 15,
+    "max": 90,
+    "step": 1,
+    "group": "Behaviour"
+  },
+  "fitToSource": {
+    "type": "checkbox",
+    "label": "Scale the radio to the widget width",
+    "value": true,
+    "group": "Behaviour"
+  },
+  "nameColor": {
+    "type": "colorpicker",
+    "label": "Station name color (leave empty = style colors)",
+    "value": "",
+    "group": "Colors"
+  },
+  "lcdColor": {
+    "type": "colorpicker",
+    "label": "LCD color (leave empty = style colors)",
+    "value": "",
+    "group": "Colors"
+  },
+  "needleColor": {
+    "type": "colorpicker",
+    "label": "Needle color (leave empty = style colors)",
+    "value": "",
+    "group": "Colors"
+  },
+  "eqFrom": {
+    "type": "colorpicker",
+    "label": "Equalizer bottom color (leave empty = style colors)",
+    "value": "",
+    "group": "Colors"
+  },
+  "eqTo": {
+    "type": "colorpicker",
+    "label": "Equalizer top color (leave empty = style colors)",
+    "value": "",
+    "group": "Colors"
+  }
+}
