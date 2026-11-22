@@ -29,10 +29,8 @@
     "value": "lastfm",
     "group": "Music source",
     "options": {
-      "lastfm": "Last.fm (Spotify via scrobbling)",
-      "tuna": "Tuna (OBS plugin, same PC)",
-      "streamerbot": "Streamer.bot",
-      "manual": "Manual text"
+      "lastfm": "Last.fm — your music, live",
+      "manual": "Manual text (no account)"
     }
   },
   "lastfmUser": {
@@ -43,20 +41,8 @@
   },
   "lastfmKey": {
     "type": "text",
-    "label": "Last.fm API key",
+    "label": "Last.fm API key (32 characters, not the shared secret)",
     "value": "",
-    "group": "Music source"
-  },
-  "tunaPort": {
-    "type": "number",
-    "label": "Tuna web server port",
-    "value": 1608,
-    "group": "Music source"
-  },
-  "streamerbotUrl": {
-    "type": "text",
-    "label": "Streamer.bot WebSocket address",
-    "value": "ws://127.0.0.1:8080/",
     "group": "Music source"
   },
   "manualTitle": {
@@ -73,23 +59,28 @@
   },
   "pollSeconds": {
     "type": "slider",
-    "label": "Check for a new track every (seconds)",
+    "label": "Check Last.fm every (seconds)",
     "value": 8,
-    "min": 3,
+    "min": 4,
     "max": 30,
     "step": 1,
     "group": "Music source"
   },
+  "idleMode": {
+    "type": "dropdown",
+    "label": "When nothing plays",
+    "value": "message",
+    "group": "Behaviour",
+    "options": {
+      "message": "Show a message",
+      "last": "Show the last track played",
+      "hide": "Hide the radio"
+    }
+  },
   "idleText": {
     "type": "text",
-    "label": "Text when nothing plays",
+    "label": "Message when nothing plays",
     "value": "Waiting for the next track…",
-    "group": "Behaviour"
-  },
-  "hideWhenIdle": {
-    "type": "checkbox",
-    "label": "Hide the radio when nothing plays",
-    "value": false,
     "group": "Behaviour"
   },
   "staticSound": {

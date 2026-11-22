@@ -1,7 +1,7 @@
 // =====================================================
 //   VANTRA STUDIO — Radio Now Playing · script.js
 //   Shows the streamer's music as a fictional FM station.
-//   Sources: Last.fm (Spotify scrobbling), Tuna (OBS plugin), Streamer.bot, or manual text.
+//   Source: Last.fm "now playing" (Spotify, Apple Music via Web Scrobbler, Deezer…) or manual text.
 // =====================================================
 
 const CONFIG = {
@@ -11,18 +11,17 @@ const CONFIG = {
   frequency:     '',              // empty = frequency of the preset (e.g. "103.5")
 
   // Music source
-  source:        'lastfm',        // lastfm | tuna | streamerbot | manual
+  source:        'lastfm',        // lastfm | manual
   lastfmUser:    '',
   lastfmKey:     '',
-  tunaPort:      1608,
-  streamerbotUrl:'ws://127.0.0.1:8080/',
   manualTitle:   'Midnight Drive',
   manualArtist:  'Vantra Studio',
   pollSeconds:   8,
 
   // Behaviour
+  idleMode:      'message',       // message | last (last track played) | hide
   idleText:      'Waiting for the next track…',
-  hideWhenIdle:  false,
+  hideWhenIdle:  false,           // old setting, same as idleMode "hide"
   staticSound:   true,
   staticVolume:  30,
   scrollSpeed:   40,              // px per second for long titles
@@ -49,7 +48,6 @@ const STATIONS = {
 let current   = { key: null, title: '', artist: '' };
 let playing   = false;
 let pollTimer = null;
-let sbSocket  = null;
 
 // =====================================================
 //   StreamElements
@@ -73,6 +71,8 @@ function coerce(key, value) {
 
 function applyFields(f) {
   Object.keys(f || {}).forEach(k => { if (k in DEFAULTS) CONFIG[k] = coerce(k, f[k]); });
+  if (CONFIG.hideWhenIdle) CONFIG.idleMode = 'hide';
+  if (!['lastfm', 'manual'].includes(CONFIG.source)) CONFIG.source = 'lastfm';
 }
 
 function applyUrlParams() {
@@ -132,13 +132,13 @@ function placeNeedle(f) {
 
 const TUNE_MS = 400;
 
-function showTrack(title, artist) {
+function showTrack(title, artist, isLast = false) {
   title = String(title || '').trim();
   artist = String(artist || '').trim();
-  const key = `${title}␟${artist}`;
+  const key = `${title}␟${artist}␟${isLast}`;
   if (key === current.key) return;
   current = { key, title, artist };
-  setPlaying(!!title);
+  setPlaying(!!title && !isLast);
 
   const radio = document.getElementById('radio-widget');
   radio.classList.remove('idle-hidden');
@@ -158,15 +158,17 @@ function showTrack(title, artist) {
 
   setTimeout(() => {
     setLine('title', title || CONFIG.idleText);
-    setLine('artist', title ? artist : '');
+    setLine('artist', title ? (isLast ? `Last played · ${artist}` : artist) : '');
     radio.classList.remove('tuning');
-    if (!title && CONFIG.hideWhenIdle) radio.classList.add('idle-hidden');
+    if (!title && CONFIG.idleMode === 'hide') radio.classList.add('idle-hidden');
     notifyParent('track', { title, artist });
   }, TUNE_MS);
 }
 
-function showIdle() {
-  if (current.key === '␟' ) return;
+// Nothing playing: message, last track played, or hidden (see "idleMode")
+function showIdle(last) {
+  if (CONFIG.idleMode === 'last' && last && last.title) { showTrack(last.title, last.artist, true); return; }
+  if (current.key === '␟␟false') return;
   showTrack('', '');
 }
 
@@ -282,14 +284,12 @@ function eqLoop(t) {
 function stopSources() {
   clearInterval(pollTimer);
   pollTimer = null;
-  if (sbSocket) { sbSocket.onclose = null; try { sbSocket.close(); } catch (_) {} sbSocket = null; }
 }
 
 function status(msg, ok = true) { notifyParent('status', { msg, ok }); }
 
 function startSource() {
   stopSources();
-  const every = Math.max(3, +CONFIG.pollSeconds || 8) * 1000;
 
   if (CONFIG.source === 'manual') {
     showTrack(CONFIG.manualTitle, CONFIG.manualArtist);
@@ -297,68 +297,38 @@ function startSource() {
     return;
   }
 
-  if (CONFIG.source === 'lastfm') {
-    if (!CONFIG.lastfmUser || !CONFIG.lastfmKey) { status('Last.fm: add your username and API key.', false); showIdle(); return; }
-    const poll = () => pollLastfm().catch(() => status('Last.fm: could not reach Last.fm (check username / API key).', false));
-    poll();
-    pollTimer = setInterval(poll, every);
-    return;
-  }
-
-  if (CONFIG.source === 'tuna') {
-    const poll = () => pollTuna().catch(() => { status(`Tuna: not found on port ${CONFIG.tunaPort}. Is OBS open with Tuna's web server on?`, false); showIdle(); });
-    poll();
-    pollTimer = setInterval(poll, Math.min(every, 3000));
-    return;
-  }
-
-  if (CONFIG.source === 'streamerbot') { connectStreamerbot(); return; }
+  if (!CONFIG.lastfmUser || !CONFIG.lastfmKey) { status('Last.fm: add your username and API key.', false); showIdle(); return; }
+  const every = Math.max(4, +CONFIG.pollSeconds || 8) * 1000;
+  const poll = () => pollLastfm().catch(() => status('Last.fm: no answer right now (internet or Last.fm down). Trying again…', false));
+  poll();
+  pollTimer = setInterval(poll, every);
 }
 
-// Last.fm — the track marked "now playing" by your Spotify scrobbler
+// Last.fm error codes → plain-English help
+const LASTFM_ERRORS = {
+  6:  'Last.fm: username not found. Check the spelling of your Last.fm username.',
+  10: 'Last.fm: invalid API key. Copy the 32-character "API key" again (not the shared secret).',
+  17: 'Last.fm: your listening history is private. Untick "Hide recent listening information" in your Last.fm privacy settings.',
+  26: 'Last.fm: this API key was suspended. Create a new one.',
+  29: 'Last.fm: too many checks. Raise "Check every" to 8 seconds or more.',
+};
+
+// Last.fm — the track marked "now playing" by your scrobbler (Spotify, Web Scrobbler…)
 async function pollLastfm() {
   const url = 'https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&limit=1&format=json'
-    + `&user=${encodeURIComponent(CONFIG.lastfmUser)}&api_key=${encodeURIComponent(CONFIG.lastfmKey)}`;
+    + `&user=${encodeURIComponent(CONFIG.lastfmUser.trim())}&api_key=${encodeURIComponent(CONFIG.lastfmKey.trim())}`;
   const res = await fetch(url, { cache: 'no-store' });
   const data = await res.json();
-  if (data.error) { status(`Last.fm: ${data.message || 'error'}`, false); return; }
+  if (data.error) { status(LASTFM_ERRORS[data.error] || `Last.fm: ${data.message || 'error'}`, false); showIdle(); return; }
   const tr = [].concat(data?.recenttracks?.track || [])[0];
+  const track = tr ? { title: tr.name, artist: tr.artist?.['#text'] || tr.artist?.name || '' } : null;
   if (tr && tr['@attr'] && tr['@attr'].nowplaying === 'true') {
-    showTrack(tr.name, tr.artist?.['#text'] || tr.artist?.name || '');
+    showTrack(track.title, track.artist);
     status(`Last.fm: now playing for ${CONFIG.lastfmUser}.`);
   } else {
-    showIdle();
-    status(`Last.fm: connected to ${CONFIG.lastfmUser}, nothing playing right now.`);
+    showIdle(track);
+    status(`Last.fm: connected to ${CONFIG.lastfmUser} — nothing playing right now. Start a song and wait a few seconds.`);
   }
-}
-
-// Tuna (OBS plugin) — local web server, default port 1608
-async function pollTuna() {
-  const res = await fetch(`http://localhost:${CONFIG.tunaPort}/`, { cache: 'no-store' });
-  const d = await res.json();
-  const artist = Array.isArray(d.artists) ? d.artists.join(', ') : (d.artist || '');
-  const isPlaying = !d.status || d.status === 'playing';
-  if (d.title && isPlaying) { showTrack(d.title, artist); status('Tuna: connected.'); }
-  else { showIdle(); status('Tuna: connected, nothing playing right now.'); }
-}
-
-// Streamer.bot — listens to its WebSocket server for {"title": "...", "artist": "..."}
-function connectStreamerbot() {
-  let ws;
-  try { ws = new WebSocket(CONFIG.streamerbotUrl); } catch (_) { status('Streamer.bot: invalid WebSocket address.', false); return; }
-  sbSocket = ws;
-  ws.onopen = () => {
-    status('Streamer.bot: connected, waiting for a track.');
-    // Also receive "Custom" events in case your action uses them
-    ws.send(JSON.stringify({ request: 'Subscribe', id: 'vantra-radio', events: { General: ['Custom'] } }));
-  };
-  ws.onmessage = ({ data }) => {
-    let m; try { m = JSON.parse(data); } catch (_) { return; }
-    const p = m?.data?.nowPlaying || m?.nowPlaying || m?.data || m;
-    if (p && (p.title || p.song)) showTrack(p.title || p.song, p.artist || p.artists || '');
-    else if (p && p.stopped) showIdle();
-  };
-  ws.onclose = () => { status('Streamer.bot: not connected (is its WebSocket server started?). Retrying…', false); setTimeout(() => { if (CONFIG.source === 'streamerbot') connectStreamerbot(); }, 5000); };
 }
 
 // =====================================================

@@ -17,7 +17,7 @@ page = page.replace('<iframe id="frame" src="widget/index.html"', '<iframe id="f
 
 # Preview defaults: manual text (no account needed) + a new track every 6 seconds
 page = page.replace('<option value="lastfm" selected>', '<option value="lastfm">', 1)
-page = page.replace('<option value="manual">Manual text</option>', '<option value="manual" selected>Manual text</option>', 1)
+page = page.replace('<option value="manual">Manual text (no account)</option>', '<option value="manual" selected>Manual text (no account)</option>', 1)
 page = page.replace("<title>VANTRA STUDIO · Radio Now Playing</title>", "<title>Radio Now Playing · Preview</title>", 1)
 page = page.replace("push();\n</script>", """push();
 // Standalone preview: change track automatically every 6 s (stops as soon as you click a test button)

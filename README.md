@@ -19,39 +19,45 @@ A 520 × 110 banner for OBS and StreamElements:
 
 The name, the frequency and all the colors can be changed.
 
-## Music sources
+## Music source: Last.fm
 
-| Source | What you need | Works in |
-|---|---|---|
-| **Last.fm** | A free Last.fm account connected to Spotify (or Apple Music, Deezer…), plus a free API key | OBS and StreamElements |
-| **Tuna** | The free Tuna plugin for OBS, with its web server on (port 1608) | OBS on the same PC |
-| **Streamer.bot** | Streamer.bot's WebSocket server, and an action that sends `{"title": "...", "artist": "..."}` | OBS and StreamElements |
-| **Manual text** | Nothing: type the title and artist yourself | Everywhere |
+The radio shows the track marked **"now playing"** on your Last.fm profile, checked every few seconds.
+Anything that sends "now playing" to Last.fm works:
 
-### Last.fm in 2 minutes
-1. Create a free account on last.fm.
-2. Settings › Applications › connect **Spotify** (scrobbling).
-3. Get an API key at `https://www.last.fm/api/account/create` (any app name, no callback needed).
-4. Put your username and the key in the widget settings.
+| You listen on | How it reaches Last.fm |
+|---|---|
+| **Spotify** (app, phone, web) | Last.fm › Settings › Applications › Spotify Scrobbling › Connect |
+| **Apple Music** | Play on music.apple.com with the free **Web Scrobbler** browser extension connected to Last.fm |
+| **Deezer, YouTube Music, SoundCloud…** in a browser | The **Web Scrobbler** extension |
 
-### Streamer.bot
-Turn on **Servers › WebSocket Server**, then in the action that runs when your song changes, add a C# sub-action:
+No Last.fm? Use **Manual text**: type the title and artist yourself.
 
-```csharp
-CPH.WebsocketBroadcastJson("{\"title\":\"" + title + "\",\"artist\":\"" + artist + "\"}");
-```
+### Set up Last.fm (free, ~5 minutes)
+1. Create an account on last.fm.
+2. Connect your player (table above). Play a song: it should show "Scrobbling now" on your profile.
+3. Get an API key at `https://www.last.fm/api/account/create` (any app name, leave the URLs empty). Copy the **API key** (32 characters), not the shared secret.
+4. In the configurator, type your username and the key, then click **Test my Last.fm**.
+
+| Message | What to do |
+|---|---|
+| Username not found | Check the spelling of your Last.fm username |
+| Invalid API key | Copy the "API key" again, not the shared secret |
+| History is private | Untick "Hide recent listening information" in Last.fm privacy settings |
+| Nothing playing right now | Start a song; check Spotify isn't in a private session |
+
+When nothing plays, the radio can show a message, the **last track played**, or hide itself.
 
 ## Install
 
 ### OBS only
 1. Open `index.html` (the configurator) in your browser.
-2. Pick a station and a music source, then click **Copy the OBS link**.
+2. Pick a station, enter your Last.fm username and API key (or use Manual text), then click **Copy the OBS link**.
 3. OBS › **+** › **Browser** › paste the link › **520 × 110**. A bigger size such as 1040 × 220 works too: the radio scales itself.
 
 ### StreamElements
 1. Overlays › your overlay › **+** › Static / Custom › **Custom widget** › **Open editor**.
 2. Paste `streamelements/se-html.txt`, `se-css.txt`, `se-js.txt` and `se-fields.txt` into the HTML, CSS, JS and FIELDS tabs.
-3. Done › Save, then choose the station and the music source in the widget settings.
+3. Done › Save, then choose the station and enter your Last.fm username and API key in the widget settings.
 
 ## Editing
 
