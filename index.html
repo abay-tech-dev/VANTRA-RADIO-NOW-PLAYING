@@ -184,7 +184,7 @@ window.addEventListener('message', ({ data }) => {
 });
 
 const DEMO = [['Neon Heartbeat', 'Laser Coast'], ['Midnight Drive', 'Vantra Studio'], ['Ocean Avenue', 'Sunset Riders'], ['Glass City Lights', 'Nova & The Palms']];
-let di = 0;
+let di = -1;
 document.getElementById('t-next').onclick = () => { di = (di + 1) % DEMO.length; send({ type: 'cmd:track', title: DEMO[di][0], artist: DEMO[di][1] }); };
 document.getElementById('t-long').onclick = () => send({ type: 'cmd:track', title: 'Ocean Boulevard Sunset (Extended Night Drive Mix) [Remastered]', artist: 'The Palm Street Collective feat. Laser Coast' });
 document.getElementById('t-idle').onclick = () => send({ type: 'cmd:idle' });

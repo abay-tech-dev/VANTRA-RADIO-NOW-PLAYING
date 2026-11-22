@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radio Now Playing · Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&family=Yellowtail&display=swap" rel="stylesheet">
+<style>
+:root{--acc:#ff3fa4;--coral:#ff6b5b;--indigo:#5b4bff;--bg:#0b0a16;--panel:#14132a;--line:#2a2850;--text:#eceaff;--muted:#a3a0c8;--ok:#3ddc84;--bad:#ff5f56}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',system-ui,sans-serif;font-size:14px}
+.layout{display:flex;height:100vh}
+aside{width:340px;min-width:340px;height:100vh;display:flex;flex-direction:column;background:var(--panel);border-right:1px solid var(--line)}
+.logo{padding:16px 20px;border-bottom:1px solid var(--line)}
+.logo b{display:block;font-size:16px;letter-spacing:6px}.logo b span{color:var(--coral);margin:0 6px}
+.logo em{font-style:normal;color:var(--muted);font-size:12px}
+.scroll{flex:1;overflow-y:auto;padding:0 20px 24px;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.sec{margin-top:18px}
+.sec h3{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--acc);margin-bottom:10px;display:flex;gap:8px;align-items:center}
+.sec h3::after{content:"";flex:1;height:1px;background:var(--line)}
+label{display:block;font-size:12px;color:var(--muted);margin:10px 0 5px}
+input[type=text],input[type=number],input[type=password],select{width:100%;background:#0d0c1d;border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--text);font:inherit;outline:none}
+input:focus,select:focus{border-color:var(--acc)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.colors{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.colors input{width:100%;height:30px;padding:2px;background:#0d0c1d;border:1px solid var(--line);border-radius:6px}
+.colors small{display:block;font-size:10px;color:var(--muted);text-align:center;margin-top:3px}
+.toggle{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.toggle input{width:18px;height:18px;accent-color:var(--acc)}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.hint{font-size:12px;color:var(--muted);line-height:1.5;margin-top:8px;padding:10px 12px;border-radius:8px;background:#0d0c1d;border:1px dashed var(--line)}
+.hint b{color:var(--text)}.hint code{font-family:'JetBrains Mono';font-size:11px;color:var(--acc)}
+.src{display:none}.src.on{display:block}
+.status{margin-top:10px;font-size:12px;display:flex;gap:8px;align-items:flex-start}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--muted);margin-top:4px;flex-shrink:0}
+.status.ok i{background:var(--ok);box-shadow:0 0 6px var(--ok)}.status.bad i{background:var(--bad)}
+.stations{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.st{padding:10px;border-radius:10px;border:2px solid var(--line);background:#0d0c1d;cursor:pointer;text-align:left;color:var(--text);font:inherit}
+.st b{display:block;font-family:Yellowtail,cursive;font-size:22px;font-weight:400;line-height:1.1}
+.st small{color:var(--muted)}
+.st.on{border-color:var(--acc)}
+.btn{width:100%;margin-top:10px;padding:10px;border:0;border-radius:10px;background:var(--acc);color:#0b0a16;font:inherit;font-weight:700;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.url{margin-top:10px;padding:10px;border-radius:8px;background:#0d0c1d;border:1px solid var(--line);font-family:'JetBrains Mono';font-size:11px;color:var(--acc);word-break:break-all;max-height:110px;overflow:auto}
+main{flex:1;position:relative;overflow:hidden;background:linear-gradient(180deg,#1a0533 0%,#4a0f5c 42%,#c2306e 64%,#ff8a3d 76%,#12061f 76.2%,#12061f 100%)}
+main::before{content:"";position:absolute;left:50%;top:22%;width:360px;height:360px;transform:translateX(-50%);border-radius:50%;background:linear-gradient(180deg,#ffd36b,#ff8a3d 50%,#ff3fa4);-webkit-mask:linear-gradient(#000 78%,transparent 78%);mask:linear-gradient(#000 78%,transparent 78%);opacity:.9}
+main::after{content:"";position:absolute;left:-20%;right:-20%;bottom:0;height:24%;background-image:linear-gradient(rgba(255,63,164,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(45,226,230,.4) 1px,transparent 1px);background-size:60px 60px;transform:perspective(500px) rotateX(55deg);transform-origin:bottom}
+.top{position:absolute;left:0;right:0;top:0;height:44px;display:flex;align-items:center;gap:12px;padding:0 18px;background:rgba(0,0,0,.6);z-index:5;font-size:13px}
+.live{background:#ff2e4d;font-weight:700;font-size:11px;letter-spacing:2px;padding:2px 8px;border-radius:4px}
+.wrap{position:absolute;left:40px;bottom:calc(24% + 30px);z-index:4;width:832px;height:176px}
+.wrap iframe{width:520px;height:110px;border:0;transform:scale(1.6);transform-origin:0 0;background:transparent}
+.tests{position:absolute;right:24px;top:64px;z-index:5;display:flex;flex-direction:column;gap:8px;width:230px}
+.tests .btn{margin:0}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(80px);background:var(--panel);border:1px solid var(--acc);padding:8px 16px;border-radius:8px;transition:transform .3s;z-index:9}
+.toast.show{transform:translateX(-50%)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside>
+  <div class="logo"><b>VANTRA<span>·</span>STUDIO</b><em>Radio Now Playing — settings & preview</em></div>
+  <div class="scroll">
+
+    <div class="sec"><h3>Station</h3>
+      <div class="stations" id="stations">
+        <button class="st on" data-st="neon"><b style="color:#ff3fa4">Neon FM</b><small>103.5 · synthwave</small></button>
+        <button class="st" data-st="rock"><b style="color:#ffd166">Thunder Rock</b><small>98.7 · rock</small></button>
+        <button class="st" data-st="hiphop"><b style="color:#ffd700">Block Party</b><small>105.9 · hip-hop</small></button>
+        <button class="st" data-st="lofi"><b style="color:#d6c6f2">Chill Wave</b><small>88.1 · lo-fi</small></button>
+      </div>
+      <input type="hidden" data-key="station" id="station" value="neon">
+      <div class="row2">
+        <div><label>Station name</label><input type="text" data-key="stationName" placeholder="Neon FM"></div>
+        <div><label>Frequency (88–108)</label><input type="text" data-key="frequency" placeholder="103.5"></div>
+      </div>
+      <label>Your own colors (optional)</label>
+      <div class="colors">
+        <div><input type="color" data-key="nameColor" data-optional value="#ff3fa4"><small>Name</small></div>
+        <div><input type="color" data-key="lcdColor" data-optional value="#2de2e6"><small>LCD</small></div>
+        <div><input type="color" data-key="needleColor" data-optional value="#ff8a3d"><small>Needle</small></div>
+        <div><input type="color" data-key="eqFrom" data-optional value="#ff6b5b"><small>EQ low</small></div>
+        <div><input type="color" data-key="eqTo" data-optional value="#ff2e88"><small>EQ high</small></div>
+      </div>
+      <div class="toggle"><span>Use my own colors</span><input type="checkbox" id="own-colors"></div>
+    </div>
+
+    <div class="sec"><h3>Music source</h3>
+      <select data-key="source" id="source">
+        <option value="lastfm">Last.fm (Spotify, Apple Music… via scrobbling)</option>
+        <option value="tuna">Tuna (OBS plugin)</option>
+        <option value="streamerbot">Streamer.bot</option>
+        <option value="manual" selected>Manual text</option>
+      </select>
+
+      <div class="src" data-src="lastfm">
+        <div class="row2">
+          <div><label>Last.fm username</label><input type="text" data-key="lastfmUser" placeholder="your_name"></div>
+          <div><label>Last.fm API key</label><input type="password" data-key="lastfmKey" placeholder="32 characters"></div>
+        </div>
+        <div class="hint"><b>Free, 2 minutes:</b> create a Last.fm account, connect Spotify in <b>Settings › Applications</b>, then get an API key at <code>last.fm/api/account/create</code> (any app name). Works in OBS and StreamElements.</div>
+      </div>
+      <div class="src" data-src="tuna">
+        <label>Tuna web server port</label><input type="number" data-key="tunaPort" value="1608">
+        <div class="hint">Install the free <b>Tuna</b> plugin for OBS, choose your player (Spotify, YouTube Music…), and turn on its <b>web server</b> (port <code>1608</code>). Works when OBS runs on the same PC.</div>
+      </div>
+      <div class="src" data-src="streamerbot">
+        <label>Streamer.bot WebSocket address</label><input type="text" data-key="streamerbotUrl" value="ws://127.0.0.1:8080/">
+        <div class="hint">Turn on <b>Servers › WebSocket Server</b> in Streamer.bot. In your "song changed" action, add a C# line:<br><code>CPH.WebsocketBroadcastJson("{\"title\":\"...\",\"artist\":\"...\"}");</code></div>
+      </div>
+      <div class="src" data-src="manual">
+        <label>Title</label><input type="text" data-key="manualTitle" value="Midnight Drive">
+        <label>Artist</label><input type="text" data-key="manualArtist" value="Vantra Studio">
+        <div class="hint">Type what's playing. Change it any time: the radio tunes to the new title.</div>
+      </div>
+      <div class="status" id="status"><i></i><span>Preview ready.</span></div>
+    </div>
+
+    <div class="sec"><h3>Behaviour</h3>
+      <label>Text when nothing plays</label><input type="text" data-key="idleText" value="Waiting for the next track…">
+      <div class="toggle"><span>Hide the radio when nothing plays</span><input type="checkbox" data-key="hideWhenIdle"></div>
+      <div class="toggle"><span>Radio static sound on track change</span><input type="checkbox" data-key="staticSound" checked></div>
+      <label>Static volume</label><input type="range" data-key="staticVolume" min="0" max="100" value="30">
+      <label>Scrolling speed for long titles</label><input type="range" data-key="scrollSpeed" min="15" max="90" value="40">
+      <label>Check for a new track every (seconds)</label><input type="number" data-key="pollSeconds" value="8" min="3">
+    </div>
+
+    <div class="sec"><h3>Add it to OBS</h3>
+      <div class="url" id="url">…</div>
+      <button class="btn" id="copy">Copy the OBS link</button>
+      <div class="hint">OBS › <b>+</b> › <b>Browser</b> › paste the link › Width <b>520</b>, Height <b>110</b> (or 1040 × 220 for a sharper, bigger banner — it scales by itself).<br>StreamElements users: see <b>HOW-TO-USE.html</b>.</div>
+    </div>
+  </div>
+</aside>
+
+<main>
+  <div class="top"><span class="live">LIVE</span><span>Preview — your stream</span></div>
+  <div class="tests">
+    <button class="btn" id="t-next">♪ Simulate a new track</button>
+    <button class="btn ghost" id="t-long">♪ Very long title</button>
+    <button class="btn ghost" id="t-idle">■ Nothing playing</button>
+  </div>
+  <div class="wrap"><iframe id="frame" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+  &lt;title&gt;VANTRA STUDIO — Radio Now Playing&lt;/title&gt;
+  &lt;style&gt;
+/* =====================================================
+   VANTRA STUDIO — Radio Now Playing · style.css
+   520 x 110 banner: retro car radio · station + track · 12-bar equalizer
+   ===================================================== */
+@import url(&#x27;https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Share+Tech+Mono&amp;family=Yellowtail&amp;display=swap&#x27;);
+
+:root {
+  /* Set by the station preset (or your own colors) */
+  --name:    #ff3fa4;   /* station name */
+  --lcd:     #2de2e6;   /* LCD digits — cyan */
+  --needle:  #ff8a3d;   /* dial needle — orange */
+  --eq-from: #ff6b5b;   /* equalizer bottom — coral */
+  --eq-to:   #ff2e88;   /* equalizer top — hot pink */
+  --bg1:     #1a0b2e;
+  --bg2:     #2a0f3d;
+  --edge:    #ff3fa4;
+  --text:    #ffffff;
+  --muted:   rgba(255, 255, 255, .7);
+  --scale:   1;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { background: transparent; overflow: hidden; width: 100%; height: 100%; }
+
+#stage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+/* ── The 520 x 110 banner (scaled to fit the browser source) ── */
+.radio {
+  position: relative;
+  flex-shrink: 0;
+  width: 520px;
+  height: 110px;
+  transform: scale(var(--scale));
+  transform-origin: 0 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 14px 8px 8px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--bg1), var(--bg2));
+  border: 2px solid color-mix(in srgb, var(--edge) 70%, transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--edge) 45%, transparent), inset 0 0 18px rgba(0,0,0,.45);
+  font-family: Inter, sans-serif;
+  color: var(--text);
+  overflow: hidden;
+  transition: opacity .4s ease, transform .4s ease;
+}
+.radio.idle-hidden { opacity: 0; }
+
+/* =====================================================
+   LEFT — retro car radio
+   ===================================================== */
+.deck {
+  position: relative;
+  flex-shrink: 0;
+  width: 170px;
+  height: 94px;
+  border-radius: 12px;
+  padding: 7px 26px 6px;
+  background: linear-gradient(180deg, #2b2b33 0%, #15151b 55%, #0d0d12 100%);
+  border: 2px solid #5a5a66;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.25), inset 0 -2px 6px rgba(0,0,0,.6), 0 2px 6px rgba(0,0,0,.5);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Chrome knobs on both sides */
+.knob {
+  position: absolute;
+  top: 24px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f4f4f8, #8c8c99 45%, #3b3b44 80%);
+  box-shadow: 0 1px 2px rgba(0,0,0,.7);
+}
+.knob::after { content: &quot;&quot;; position: absolute; left: 7px; top: 2px; width: 2px; height: 5px; background: #2b2b33; border-radius: 1px; }
+.knob.l { left: 5px; }
+.knob.r { right: 5px; transform: rotate(140deg); }
+
+/* LCD window */
+.lcd {
+  position: relative;
+  height: 42px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #05121a, #020a0f);
+  border: 1px solid #000;
+  box-shadow: inset 0 0 10px rgba(0,0,0,.9);
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 5px;
+  padding-top: 3px;
+  overflow: hidden;
+  font-family: &#x27;Share Tech Mono&#x27;, monospace;
+  color: var(--lcd);
+  text-shadow: 0 0 6px var(--lcd), 0 0 12px color-mix(in srgb, var(--lcd) 60%, transparent);
+}
+.lcd::after { /* LCD pixel grid */
+  content: &quot;&quot;;
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.25) 0 1px, transparent 1px 3px);
+  pointer-events: none;
+}
+.freq { font-size: 30px; line-height: 36px; letter-spacing: 1px; }
+.band { font-size: 13px; opacity: .85; }
+.st   { position: absolute; left: 6px; top: 3px; font-size: 9px; opacity: .8; }
+
+/* Frequency dial */
+.dial {
+  position: relative;
+  height: 30px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #1b130a, #0e0a06);
+  border: 1px solid #000;
+  box-shadow: inset 0 0 6px rgba(0,0,0,.9);
+  overflow: hidden;
+}
+.scale { position: absolute; left: 8px; right: 8px; top: 2px; height: 10px; }
+.scale span {
+  position: absolute;
+  transform: translateX(-50%);
+  font-family: &#x27;Share Tech Mono&#x27;, monospace;
+  font-size: 8px;
+  line-height: 10px;
+  color: #e9d8b5;
+  opacity: .85;
+}
+.ticks {
+  position: absolute;
+  left: 8px; right: 8px; bottom: 3px;
+  height: 12px;
+  background:
+    repeating-linear-gradient(90deg, rgba(233,216,181,.85) 0 1px, transparent 1px 20%),
+    repeating-linear-gradient(90deg, rgba(233,216,181,.45) 0 1px, transparent 1px 5%);
+  background-size: 100% 100%, 100% 55%;
+  background-repeat: no-repeat;
+  background-position: 0 0, 0 100%;
+}
+.needle {
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  left: 50%;
+  width: 3px;
+  margin-left: -1px;
+  border-radius: 2px;
+  background: var(--needle);
+  box-shadow: 0 0 6px var(--needle), 0 0 12px color-mix(in srgb, var(--needle) 60%, transparent);
+}
+
+/* Radio static (shown 400 ms while tuning) */
+canvas.static { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; z-index: 3; mix-blend-mode: screen; }
+.tuning canvas.static { opacity: .75; }
+
+/* =====================================================
+   CENTER — station name + now playing
+   ===================================================== */
+.info {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 94px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.station {
+  font-family: Yellowtail, cursive;
+  font-size: 30px;
+  line-height: 34px;
+  color: var(--name);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--name) 65%, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 2px 2px;
+}
+
+.line {
+  position: relative;
+  height: 22px;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 16px;
+  line-height: 22px;
+  -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 18px), transparent);
+  mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 18px), transparent);
+}
+.line.title  { font-weight: 700; color: var(--text); }
+.line.artist { font-weight: 400; color: var(--muted); }
+
+.marquee { display: inline-block; padding-right: 2px; transition: opacity .18s ease, transform .18s ease; }
+.marquee.scroll { animation: marquee var(--dur, 10s) linear infinite; padding-right: 0; }
+.marquee .gap { display: inline-block; width: 48px; }
+@keyframes marquee {
+  0%, 12% { transform: translateX(0); }
+  100%    { transform: translateX(var(--shift)); }
+}
+
+.tuning .marquee { opacity: 0; transform: translateY(4px); }
+
+/* =====================================================
+   RIGHT — 12-bar equalizer
+   ===================================================== */
+.eq {
+  flex-shrink: 0;
+  width: 106px;
+  height: 74px;
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+}
+.eq i {
+  flex: 1;
+  height: 8%;
+  border-radius: 2px 2px 1px 1px;
+  background: linear-gradient(0deg, var(--eq-from), var(--eq-to));
+  box-shadow: 0 0 6px color-mix(in srgb, var(--eq-to) 45%, transparent);
+  transition: height .09s linear;
+}
+
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;!-- WIDGET:START --&gt;
+&lt;div id=&quot;stage&quot;&gt;
+  &lt;div id=&quot;radio-widget&quot; class=&quot;radio&quot;&gt;
+
+    &lt;!-- Left: retro car radio --&gt;
+    &lt;div class=&quot;deck&quot;&gt;
+      &lt;span class=&quot;knob l&quot;&gt;&lt;/span&gt;&lt;span class=&quot;knob r&quot;&gt;&lt;/span&gt;
+      &lt;div class=&quot;lcd&quot;&gt;
+        &lt;canvas class=&quot;static&quot; id=&quot;lcd-static&quot; width=&quot;120&quot; height=&quot;40&quot;&gt;&lt;/canvas&gt;
+        &lt;span class=&quot;st&quot;&gt;ST&lt;/span&gt;
+        &lt;span class=&quot;freq&quot; id=&quot;freq&quot;&gt;103.5&lt;/span&gt;&lt;span class=&quot;band&quot;&gt;FM&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;dial&quot;&gt;
+        &lt;div class=&quot;scale&quot;&gt;
+          &lt;span style=&quot;left:0%&quot;&gt;88&lt;/span&gt;&lt;span style=&quot;left:20%&quot;&gt;92&lt;/span&gt;&lt;span style=&quot;left:40%&quot;&gt;96&lt;/span&gt;
+          &lt;span style=&quot;left:60%&quot;&gt;100&lt;/span&gt;&lt;span style=&quot;left:80%&quot;&gt;104&lt;/span&gt;&lt;span style=&quot;left:100%&quot;&gt;108&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;ticks&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;needle&quot; id=&quot;needle&quot;&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Center: station + now playing --&gt;
+    &lt;div class=&quot;info&quot;&gt;
+      &lt;canvas class=&quot;static&quot; id=&quot;info-static&quot; width=&quot;200&quot; height=&quot;80&quot;&gt;&lt;/canvas&gt;
+      &lt;div class=&quot;station&quot; id=&quot;station&quot;&gt;Neon FM&lt;/div&gt;
+      &lt;div class=&quot;line title&quot;&gt;&lt;span class=&quot;marquee&quot; id=&quot;title&quot;&gt;Tuning in…&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;line artist&quot;&gt;&lt;span class=&quot;marquee&quot; id=&quot;artist&quot;&gt;&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Right: equalizer --&gt;
+    &lt;div class=&quot;eq&quot; id=&quot;eq&quot;&gt;&lt;/div&gt;
+
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;!-- WIDGET:END --&gt;
+  &lt;script&gt;
+// =====================================================
+//   VANTRA STUDIO — Radio Now Playing · script.js
+//   Shows the streamer&#x27;s music as a fictional FM station.
+//   Sources: Last.fm (Spotify scrobbling), Tuna (OBS plugin), Streamer.bot, or manual text.
+// =====================================================
+
+const CONFIG = {
+  // Station
+  station:       &#x27;neon&#x27;,          // neon | rock | hiphop | lofi
+  stationName:   &#x27;&#x27;,              // empty = name of the preset (e.g. &quot;Neon FM&quot;)
+  frequency:     &#x27;&#x27;,              // empty = frequency of the preset (e.g. &quot;103.5&quot;)
+
+  // Music source
+  source:        &#x27;lastfm&#x27;,        // lastfm | tuna | streamerbot | manual
+  lastfmUser:    &#x27;&#x27;,
+  lastfmKey:     &#x27;&#x27;,
+  tunaPort:      1608,
+  streamerbotUrl:&#x27;ws://127.0.0.1:8080/&#x27;,
+  manualTitle:   &#x27;Midnight Drive&#x27;,
+  manualArtist:  &#x27;Vantra Studio&#x27;,
+  pollSeconds:   8,
+
+  // Behaviour
+  idleText:      &#x27;Waiting for the next track…&#x27;,
+  hideWhenIdle:  false,
+  staticSound:   true,
+  staticVolume:  30,
+  scrollSpeed:   40,              // px per second for long titles
+  fitToSource:   true,            // scale the 520x110 banner to the browser source width
+
+  // Optional color overrides (empty = preset colors)
+  nameColor:     &#x27;&#x27;,
+  lcdColor:      &#x27;&#x27;,
+  needleColor:   &#x27;&#x27;,
+  eqFrom:        &#x27;&#x27;,
+  eqTo:          &#x27;&#x27;,
+};
+
+const DEFAULTS = { ...CONFIG };
+
+// Station presets — only names and colors change
+const STATIONS = {
+  neon:   { name: &#x27;Neon FM&#x27;,     freq: &#x27;103.5&#x27;, name_c: &#x27;#ff3fa4&#x27;, lcd: &#x27;#2de2e6&#x27;, needle: &#x27;#ff8a3d&#x27;, eqFrom: &#x27;#ff6b5b&#x27;, eqTo: &#x27;#ff2e88&#x27;, bg1: &#x27;#1a0b2e&#x27;, bg2: &#x27;#2a0f3d&#x27;, edge: &#x27;#ff3fa4&#x27; },
+  rock:   { name: &#x27;Thunder Rock&#x27;, freq: &#x27;98.7&#x27;, name_c: &#x27;#ffd166&#x27;, lcd: &#x27;#ffb000&#x27;, needle: &#x27;#ff3b30&#x27;, eqFrom: &#x27;#ff8a00&#x27;, eqTo: &#x27;#e10600&#x27;, bg1: &#x27;#180a08&#x27;, bg2: &#x27;#2b0d0a&#x27;, edge: &#x27;#ff6a00&#x27; },
+  hiphop: { name: &#x27;Block Party&#x27;, freq: &#x27;105.9&#x27;, name_c: &#x27;#ffd700&#x27;, lcd: &#x27;#b388ff&#x27;, needle: &#x27;#ffd700&#x27;, eqFrom: &#x27;#7c4dff&#x27;, eqTo: &#x27;#ff2e88&#x27;, bg1: &#x27;#120a24&#x27;, bg2: &#x27;#22103a&#x27;, edge: &#x27;#ffd700&#x27; },
+  lofi:   { name: &#x27;Chill Wave&#x27;,  freq: &#x27;88.1&#x27;,  name_c: &#x27;#d6c6f2&#x27;, lcd: &#x27;#9be7c4&#x27;, needle: &#x27;#ffb4a2&#x27;, eqFrom: &#x27;#a0c4ff&#x27;, eqTo: &#x27;#ffc6ff&#x27;, bg1: &#x27;#141a2e&#x27;, bg2: &#x27;#1f2440&#x27;, edge: &#x27;#a0c4ff&#x27; },
+};
+
+let current   = { key: null, title: &#x27;&#x27;, artist: &#x27;&#x27; };
+let playing   = false;
+let pollTimer = null;
+let sbSocket  = null;
+
+// =====================================================
+//   StreamElements
+// =====================================================
+
+window.addEventListener(&#x27;onWidgetLoad&#x27;, ({ detail }) =&gt; {
+  if (detail?.fieldData) applyFields(detail.fieldData);
+  applyConfig();
+});
+
+// =====================================================
+//   Settings
+// =====================================================
+
+function coerce(key, value) {
+  const def = DEFAULTS[key];
+  if (typeof def === &#x27;number&#x27;)  return Number.isFinite(+value) ? +value : def;
+  if (typeof def === &#x27;boolean&#x27;) return value === true || value === &#x27;true&#x27; || value === &#x27;1&#x27; || value === 1;
+  return value == null ? def : String(value);
+}
+
+function applyFields(f) {
+  Object.keys(f || {}).forEach(k =&gt; { if (k in DEFAULTS) CONFIG[k] = coerce(k, f[k]); });
+}
+
+function applyUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  const f = {};
+  params.forEach((v, k) =&gt; { f[k] = v; });
+  applyFields(f);
+  return [...params.keys()].length &gt; 0;
+}
+
+const validHex = c =&gt; (typeof c === &#x27;string&#x27; &amp;&amp; /^#[0-9a-f]{6}$/i.test(c) ? c : &#x27;&#x27;);
+
+function preset() { return STATIONS[CONFIG.station] || STATIONS.neon; }
+function stationFreq() {
+  const f = parseFloat(String(CONFIG.frequency || preset().freq).replace(&#x27;,&#x27;, &#x27;.&#x27;));
+  return Number.isFinite(f) ? Math.min(108, Math.max(88, f)) : 103.5;
+}
+
+function applyConfig() {
+  const p = preset();
+  const r = document.documentElement.style;
+  r.setProperty(&#x27;--name&#x27;,    validHex(CONFIG.nameColor)   || p.name_c);
+  r.setProperty(&#x27;--lcd&#x27;,     validHex(CONFIG.lcdColor)    || p.lcd);
+  r.setProperty(&#x27;--needle&#x27;,  validHex(CONFIG.needleColor) || p.needle);
+  r.setProperty(&#x27;--eq-from&#x27;, validHex(CONFIG.eqFrom)      || p.eqFrom);
+  r.setProperty(&#x27;--eq-to&#x27;,   validHex(CONFIG.eqTo)        || p.eqTo);
+  r.setProperty(&#x27;--bg1&#x27;, p.bg1);
+  r.setProperty(&#x27;--bg2&#x27;, p.bg2);
+  r.setProperty(&#x27;--edge&#x27;, p.edge);
+
+  document.getElementById(&#x27;station&#x27;).textContent = CONFIG.stationName || p.name;
+  document.getElementById(&#x27;freq&#x27;).textContent = stationFreq().toFixed(1);
+  placeNeedle(stationFreq());
+  fitScale();
+  startSource();
+}
+
+function fitScale() {
+  const s = CONFIG.fitToSource ? Math.max(0.2, window.innerWidth / 520) : 1;
+  document.documentElement.style.setProperty(&#x27;--scale&#x27;, String(s));
+}
+window.addEventListener(&#x27;resize&#x27;, fitScale);
+
+// =====================================================
+//   Dial needle
+// =====================================================
+
+const needlePos = f =&gt; `calc(8px + (100% - 16px) * ${(f - 88) / 20})`;
+
+function placeNeedle(f) {
+  document.getElementById(&#x27;needle&#x27;).style.left = needlePos(f);
+}
+
+// =====================================================
+//   Track change: needle sweep + 400 ms radio static, then the new title
+// =====================================================
+
+const TUNE_MS = 400;
+
+function showTrack(title, artist) {
+  title = String(title || &#x27;&#x27;).trim();
+  artist = String(artist || &#x27;&#x27;).trim();
+  const key = `${title}␟${artist}`;
+  if (key === current.key) return;
+  current = { key, title, artist };
+  setPlaying(!!title);
+
+  const radio = document.getElementById(&#x27;radio-widget&#x27;);
+  radio.classList.remove(&#x27;idle-hidden&#x27;);
+  radio.classList.add(&#x27;tuning&#x27;);
+
+  const f = stationFreq();
+  const needle = document.getElementById(&#x27;needle&#x27;);
+  needle.animate([
+    { left: needlePos(f) },
+    { left: needlePos(88.6), offset: 0.3 },
+    { left: needlePos(107.4), offset: 0.75 },
+    { left: needlePos(f) },
+  ], { duration: TUNE_MS, easing: &#x27;ease-in-out&#x27; });
+
+  playStatic();
+  runStaticCanvas(TUNE_MS);
+
+  setTimeout(() =&gt; {
+    setLine(&#x27;title&#x27;, title || CONFIG.idleText);
+    setLine(&#x27;artist&#x27;, title ? artist : &#x27;&#x27;);
+    radio.classList.remove(&#x27;tuning&#x27;);
+    if (!title &amp;&amp; CONFIG.hideWhenIdle) radio.classList.add(&#x27;idle-hidden&#x27;);
+    notifyParent(&#x27;track&#x27;, { title, artist });
+  }, TUNE_MS);
+}
+
+function showIdle() {
+  if (current.key === &#x27;␟&#x27; ) return;
+  showTrack(&#x27;&#x27;, &#x27;&#x27;);
+}
+
+// Long titles scroll (marquee); short ones stay still
+function setLine(id, text) {
+  const el = document.getElementById(id);
+  el.classList.remove(&#x27;scroll&#x27;);
+  el.style.removeProperty(&#x27;--shift&#x27;);
+  el.textContent = text;
+  requestAnimationFrame(() =&gt; {
+    const box = el.parentElement.clientWidth;
+    const w = el.scrollWidth;
+    if (w &gt; box - 4) {
+      el.innerHTML = `${esc(text)}&lt;span class=&quot;gap&quot;&gt;&lt;/span&gt;${esc(text)}&lt;span class=&quot;gap&quot;&gt;&lt;/span&gt;`;
+      const shift = w + 48;
+      el.style.setProperty(&#x27;--shift&#x27;, `-${shift}px`);
+      el.style.setProperty(&#x27;--dur&#x27;, `${Math.max(4, shift / Math.max(10, CONFIG.scrollSpeed)) / 0.88}s`);
+      el.classList.add(&#x27;scroll&#x27;);
+    }
+  });
+}
+
+const esc = s =&gt; String(s).replace(/&amp;/g, &#x27;&amp;amp;&#x27;).replace(/&lt;/g, &#x27;&amp;lt;&#x27;).replace(/&gt;/g, &#x27;&amp;gt;&#x27;);
+
+// Visual static (noise) on the LCD and the text area
+function runStaticCanvas(ms) {
+  const canvases = [...document.querySelectorAll(&#x27;canvas.static&#x27;)];
+  const end = performance.now() + ms;
+  const draw = () =&gt; {
+    canvases.forEach(c =&gt; {
+      const ctx = c.getContext(&#x27;2d&#x27;);
+      const img = ctx.createImageData(c.width, c.height);
+      for (let i = 0; i &lt; img.data.length; i += 4) {
+        const v = Math.random() &lt; 0.5 ? 0 : Math.random() * 255;
+        img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+        img.data[i + 3] = Math.random() &lt; 0.6 ? 200 : 0;
+      }
+      ctx.putImageData(img, 0, 0);
+    });
+    if (performance.now() &lt; end) requestAnimationFrame(draw);
+  };
+  draw();
+}
+
+// Radio &quot;crackle&quot;: 400 ms of filtered white noise (Web Audio, no file needed)
+let audioCtx = null;
+function playStatic() {
+  if (!CONFIG.staticSound || !(CONFIG.staticVolume &gt; 0)) return;
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === &#x27;suspended&#x27;) audioCtx.resume();
+    const len = Math.floor(audioCtx.sampleRate * TUNE_MS / 1000);
+    const buf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i &lt; len; i++) {
+      const crackle = Math.random() &lt; 0.004 ? (Math.random() * 2 - 1) * 3 : 0;   // little pops
+      d[i] = (Math.random() * 2 - 1) * 0.55 + crackle;
+    }
+    const src = audioCtx.createBufferSource();
+    src.buffer = buf;
+    const band = audioCtx.createBiquadFilter();
+    band.type = &#x27;bandpass&#x27;;
+    band.frequency.setValueAtTime(900, audioCtx.currentTime);
+    band.frequency.linearRampToValueAtTime(3200, audioCtx.currentTime + TUNE_MS / 1000);   // the &quot;sweep&quot;
+    band.Q.value = 0.8;
+    const gain = audioCtx.createGain();
+    const v = Math.min(1, CONFIG.staticVolume / 100) * 0.6;
+    gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(v, audioCtx.currentTime + 0.04);
+    gain.gain.setValueAtTime(v, audioCtx.currentTime + TUNE_MS / 1000 - 0.08);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + TUNE_MS / 1000);
+    src.connect(band).connect(gain).connect(audioCtx.destination);
+    src.start();
+  } catch (_) { /* audio not allowed: the visual static still plays */ }
+}
+
+// =====================================================
+//   Equalizer — 12 animated bars (lively while music plays, resting when idle)
+// =====================================================
+
+const BARS = 12;
+const bars = [];
+let eqLevels = new Array(BARS).fill(0.08);
+
+function buildEq() {
+  const eq = document.getElementById(&#x27;eq&#x27;);
+  eq.innerHTML = &#x27;&#x27;;
+  for (let i = 0; i &lt; BARS; i++) { const b = document.createElement(&#x27;i&#x27;); eq.appendChild(b); bars.push(b); }
+}
+
+function setPlaying(on) { playing = on; }
+
+let lastEq = 0;
+function eqLoop(t) {
+  if (t - lastEq &gt; 90) {
+    lastEq = t;
+    const beat = 0.55 + 0.45 * Math.abs(Math.sin(t / 260));
+    for (let i = 0; i &lt; BARS; i++) {
+      // bass on the left is taller, treble on the right is livelier
+      const shape = 1 - Math.abs(i - 3.5) / 11;
+      const target = playing ? Math.min(1, (0.25 + Math.random() * 0.75) * shape * beat + 0.08) : 0.06 + Math.random() * 0.04;
+      eqLevels[i] += (target - eqLevels[i]) * (playing ? 0.75 : 0.3);
+      bars[i].style.height = `${Math.round(eqLevels[i] * 100)}%`;
+    }
+  }
+  requestAnimationFrame(eqLoop);
+}
+
+// =====================================================
+//   Music sources
+// =====================================================
+
+function stopSources() {
+  clearInterval(pollTimer);
+  pollTimer = null;
+  if (sbSocket) { sbSocket.onclose = null; try { sbSocket.close(); } catch (_) {} sbSocket = null; }
+}
+
+function status(msg, ok = true) { notifyParent(&#x27;status&#x27;, { msg, ok }); }
+
+function startSource() {
+  stopSources();
+  const every = Math.max(3, +CONFIG.pollSeconds || 8) * 1000;
+
+  if (CONFIG.source === &#x27;manual&#x27;) {
+    showTrack(CONFIG.manualTitle, CONFIG.manualArtist);
+    status(&#x27;Manual mode: showing your own text.&#x27;);
+    return;
+  }
+
+  if (CONFIG.source === &#x27;lastfm&#x27;) {
+    if (!CONFIG.lastfmUser || !CONFIG.lastfmKey) { status(&#x27;Last.fm: add your username and API key.&#x27;, false); showIdle(); return; }
+    const poll = () =&gt; pollLastfm().catch(() =&gt; status(&#x27;Last.fm: could not reach Last.fm (check username / API key).&#x27;, false));
+    poll();
+    pollTimer = setInterval(poll, every);
+    return;
+  }
+
+  if (CONFIG.source === &#x27;tuna&#x27;) {
+    const poll = () =&gt; pollTuna().catch(() =&gt; { status(`Tuna: not found on port ${CONFIG.tunaPort}. Is OBS open with Tuna&#x27;s web server on?`, false); showIdle(); });
+    poll();
+    pollTimer = setInterval(poll, Math.min(every, 3000));
+    return;
+  }
+
+  if (CONFIG.source === &#x27;streamerbot&#x27;) { connectStreamerbot(); return; }
+}
+
+// Last.fm — the track marked &quot;now playing&quot; by your Spotify scrobbler
+async function pollLastfm() {
+  const url = &#x27;https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&amp;limit=1&amp;format=json&#x27;
+    + `&amp;user=${encodeURIComponent(CONFIG.lastfmUser)}&amp;api_key=${encodeURIComponent(CONFIG.lastfmKey)}`;
+  const res = await fetch(url, { cache: &#x27;no-store&#x27; });
+  const data = await res.json();
+  if (data.error) { status(`Last.fm: ${data.message || &#x27;error&#x27;}`, false); return; }
+  const tr = [].concat(data?.recenttracks?.track || [])[0];
+  if (tr &amp;&amp; tr[&#x27;@attr&#x27;] &amp;&amp; tr[&#x27;@attr&#x27;].nowplaying === &#x27;true&#x27;) {
+    showTrack(tr.name, tr.artist?.[&#x27;#text&#x27;] || tr.artist?.name || &#x27;&#x27;);
+    status(`Last.fm: now playing for ${CONFIG.lastfmUser}.`);
+  } else {
+    showIdle();
+    status(`Last.fm: connected to ${CONFIG.lastfmUser}, nothing playing right now.`);
+  }
+}
+
+// Tuna (OBS plugin) — local web server, default port 1608
+async function pollTuna() {
+  const res = await fetch(`http://localhost:${CONFIG.tunaPort}/`, { cache: &#x27;no-store&#x27; });
+  const d = await res.json();
+  const artist = Array.isArray(d.artists) ? d.artists.join(&#x27;, &#x27;) : (d.artist || &#x27;&#x27;);
+  const isPlaying = !d.status || d.status === &#x27;playing&#x27;;
+  if (d.title &amp;&amp; isPlaying) { showTrack(d.title, artist); status(&#x27;Tuna: connected.&#x27;); }
+  else { showIdle(); status(&#x27;Tuna: connected, nothing playing right now.&#x27;); }
+}
+
+// Streamer.bot — listens to its WebSocket server for {&quot;title&quot;: &quot;...&quot;, &quot;artist&quot;: &quot;...&quot;}
+function connectStreamerbot() {
+  let ws;
+  try { ws = new WebSocket(CONFIG.streamerbotUrl); } catch (_) { status(&#x27;Streamer.bot: invalid WebSocket address.&#x27;, false); return; }
+  sbSocket = ws;
+  ws.onopen = () =&gt; {
+    status(&#x27;Streamer.bot: connected, waiting for a track.&#x27;);
+    // Also receive &quot;Custom&quot; events in case your action uses them
+    ws.send(JSON.stringify({ request: &#x27;Subscribe&#x27;, id: &#x27;vantra-radio&#x27;, events: { General: [&#x27;Custom&#x27;] } }));
+  };
+  ws.onmessage = ({ data }) =&gt; {
+    let m; try { m = JSON.parse(data); } catch (_) { return; }
+    const p = m?.data?.nowPlaying || m?.nowPlaying || m?.data || m;
+    if (p &amp;&amp; (p.title || p.song)) showTrack(p.title || p.song, p.artist || p.artists || &#x27;&#x27;);
+    else if (p &amp;&amp; p.stopped) showIdle();
+  };
+  ws.onclose = () =&gt; { status(&#x27;Streamer.bot: not connected (is its WebSocket server started?). Retrying…&#x27;, false); setTimeout(() =&gt; { if (CONFIG.source === &#x27;streamerbot&#x27;) connectStreamerbot(); }, 5000); };
+}
+
+// =====================================================
+//   Configurator bridge
+// =====================================================
+
+function notifyParent(type, payload) {
+  try { window.parent.postMessage({ type: `radio:${type}`, ...payload }, &#x27;*&#x27;); } catch (_) {}
+}
+
+window.addEventListener(&#x27;message&#x27;, ({ data }) =&gt; {
+  if (!data || typeof data.type !== &#x27;string&#x27;) return;
+  if (data.type === &#x27;cmd:config&#x27;) { applyFields(data.config || {}); applyConfig(); }
+  if (data.type === &#x27;cmd:track&#x27;)  { showTrack(data.title, data.artist); }
+  if (data.type === &#x27;cmd:idle&#x27;)   { showIdle(); }
+});
+
+// =====================================================
+//   Boot
+// =====================================================
+
+const IS_SE = typeof window.SE_API !== &#x27;undefined&#x27; || /streamelements\.com/.test(window.location.href);
+const HAS_PARAMS = applyUrlParams();
+const DEMO = new URLSearchParams(window.location.search).has(&#x27;demo&#x27;);
+
+buildEq();
+requestAnimationFrame(eqLoop);
+
+function boot() {
+  // Opened by itself with no settings (or ?demo=1): cycle through a few sample tracks
+  if (DEMO || (!IS_SE &amp;&amp; window === window.top &amp;&amp; !HAS_PARAMS)) {
+    CONFIG.source = &#x27;manual&#x27;;
+    applyConfig();
+    const demo = [
+      [&#x27;Midnight Drive&#x27;, &#x27;Vantra Studio&#x27;],
+      [&#x27;Ocean Boulevard Sunset (Extended Night Mix)&#x27;, &#x27;The Palm Street Collective&#x27;],
+      [&#x27;Neon Heartbeat&#x27;, &#x27;Laser Coast&#x27;],
+    ];
+    let i = 0;
+    setInterval(() =&gt; { i = (i + 1) % demo.length; showTrack(...demo[i]); }, 6000);
+    showTrack(...demo[0]);
+  } else if (!IS_SE) {
+    applyConfig();
+  }
+  notifyParent(&#x27;ready&#x27;, {});
+}
+
+if (document.readyState === &#x27;loading&#x27;) document.addEventListener(&#x27;DOMContentLoaded&#x27;, boot);
+else boot();
+
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+" title="Radio preview"></iframe></div>
+</main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const frame = document.getElementById('frame');
+const send = m => { try { frame.contentWindow.postMessage(m, '*'); } catch (_) {} };
+const controls = [...document.querySelectorAll('[data-key]')];
+const val = el => el.type === 'checkbox' ? el.checked : (el.type === 'number' || el.type === 'range') ? +el.value : el.value;
+const INITIAL = Object.fromEntries(controls.map(el => [el.dataset.key, val(el)]));
+const ownColors = document.getElementById('own-colors');
+
+function config() {
+  const c = Object.fromEntries(controls.map(el => [el.dataset.key, val(el)]));
+  if (!ownColors.checked) ['nameColor', 'lcdColor', 'needleColor', 'eqFrom', 'eqTo'].forEach(k => c[k] = '');
+  return c;
+}
+
+function push() {
+  const src = document.getElementById('source').value;
+  document.querySelectorAll('.src').forEach(s => s.classList.toggle('on', s.dataset.src === src));
+  send({ type: 'cmd:config', config: config() });
+  updateUrl();
+}
+
+controls.forEach(el => el.addEventListener(el.type === 'checkbox' || el.tagName === 'SELECT' || el.type === 'color' ? 'change' : 'input', push));
+ownColors.addEventListener('change', push);
+document.querySelectorAll('.st').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.st').forEach(x => x.classList.toggle('on', x === b));
+  document.getElementById('station').value = b.dataset.st;
+  push();
+}));
+
+window.addEventListener('message', ({ data }) => {
+  if (data?.type === 'radio:ready') push();
+  if (data?.type === 'radio:status') {
+    const s = document.getElementById('status');
+    s.className = 'status ' + (data.ok ? 'ok' : 'bad');
+    s.querySelector('span').textContent = data.msg;
+  }
+});
+
+const DEMO = [['Neon Heartbeat', 'Laser Coast'], ['Midnight Drive', 'Vantra Studio'], ['Ocean Avenue', 'Sunset Riders'], ['Glass City Lights', 'Nova & The Palms']];
+let di = -1;
+document.getElementById('t-next').onclick = () => { di = (di + 1) % DEMO.length; send({ type: 'cmd:track', title: DEMO[di][0], artist: DEMO[di][1] }); };
+document.getElementById('t-long').onclick = () => send({ type: 'cmd:track', title: 'Ocean Boulevard Sunset (Extended Night Drive Mix) [Remastered]', artist: 'The Palm Street Collective feat. Laser Coast' });
+document.getElementById('t-idle').onclick = () => send({ type: 'cmd:idle' });
+
+function widgetBase() {
+  const here = location.href.split(/[?#]/)[0].replace(/index\.html$/, '');
+  return (here.endsWith('/') ? here : here + '/') + 'widget/index.html';
+}
+function updateUrl() {
+  const c = config(), q = new URLSearchParams();
+  Object.keys(c).forEach(k => { if (c[k] !== INITIAL[k] && !(c[k] === '' && !INITIAL[k])) q.set(k, String(c[k])); });
+  if (!ownColors.checked) ['nameColor', 'lcdColor', 'needleColor', 'eqFrom', 'eqTo'].forEach(k => q.delete(k));
+  if (!q.has('source')) q.set('source', c.source);
+  document.getElementById('url').textContent = widgetBase() + '?' + q;
+}
+document.getElementById('copy').onclick = () => {
+  const t = document.getElementById('url').textContent;
+  const ok = () => toast('OBS link copied!');
+  if (navigator.clipboard?.writeText) navigator.clipboard.writeText(t).then(ok, () => toast('Select the link and copy it manually'));
+  else toast('Select the link and copy it manually');
+};
+function toast(m) { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); }
+frame.addEventListener('load', () => setTimeout(push, 80));
+push();
+// Standalone preview: change track automatically every 6 s (stops as soon as you click a test button)
+let auto = setInterval(() => document.getElementById('t-next').click(), 6000);
+document.querySelectorAll('.tests .btn').forEach(b => b.addEventListener('click', e => { if (e.isTrusted) clearInterval(auto); }));
+</script>
+</body>
+</html>
