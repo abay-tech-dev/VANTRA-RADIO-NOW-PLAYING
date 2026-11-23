@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VANTRA STUDIO · Radio Now Playing</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&family=Yellowtail&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&family=Yellowtail&family=Kanit:ital,wght@1,900&display=swap" rel="stylesheet">
 <style>
 :root{--acc:#ff3fa4;--coral:#ff6b5b;--indigo:#5b4bff;--bg:#0b0a16;--panel:#14132a;--line:#2a2850;--text:#eceaff;--muted:#a3a0c8;--ok:#3ddc84;--bad:#ff5f56}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -40,6 +40,9 @@ input[type=range]{width:100%;accent-color:var(--acc)}
 .st b{display:block;font-family:Yellowtail,cursive;font-size:22px;font-weight:400;line-height:1.1}
 .st small{color:var(--muted)}
 .st.on{border-color:var(--acc)}
+.st-sunset{grid-column:1/-1;background:linear-gradient(90deg,#2a0b4a,#c2306e 70%,#ff8a3d)}
+.st-sunset b{font-family:Kanit,sans-serif;font-style:italic;font-weight:900;font-size:22px;color:#fff;text-shadow:-1.5px -1.5px 0 #000,1.5px -1.5px 0 #000,-1.5px 1.5px 0 #000,1.5px 1.5px 0 #000,2px 3px 0 #000}
+.st-sunset small{color:#fff3e0}
 .btn{width:100%;margin-top:10px;padding:10px;border:0;border-radius:10px;background:var(--acc);color:#0b0a16;font:inherit;font-weight:700;cursor:pointer}
 .btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
 .url{margin-top:10px;padding:10px;border-radius:8px;background:#0d0c1d;border:1px solid var(--line);font-family:'JetBrains Mono';font-size:11px;color:var(--acc);word-break:break-all;max-height:110px;overflow:auto}
@@ -68,6 +71,7 @@ main::after{content:"";position:absolute;left:-20%;right:-20%;bottom:0;height:24
         <button class="st" data-st="rock"><b style="color:#ffd166">Thunder Rock</b><small>98.7 · rock</small></button>
         <button class="st" data-st="hiphop"><b style="color:#ffd700">Block Party</b><small>105.9 · hip-hop</small></button>
         <button class="st" data-st="lofi"><b style="color:#d6c6f2">Chill Wave</b><small>88.1 · lo-fi</small></button>
+        <button class="st st-sunset" data-st="sunset"><b>SUNSET FM</b><small>96.9 · open-world crime</small></button>
       </div>
       <input type="hidden" data-key="station" id="station" value="neon">
       <div class="row2">

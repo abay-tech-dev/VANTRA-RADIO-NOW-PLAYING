@@ -18,8 +18,10 @@ Beginner guide: open `HOW-TO-USE.html` (or watch `HOW-TO-USE.mp4`).
 | Rock | Thunder Rock | 98.7 |
 | Hip-hop | Block Party | 105.9 |
 | Lo-fi | Chill Wave | 88.1 |
+| Open-world crime | **SUNSET FM** (logo picture, sunset sky, palm trees) | 96.9 |
 
 The name, the frequency and all the colors can be changed.
+SUNSET FM's logo is a picture stored in `widget/style.css` (no font file is included): a custom station name uses a free bold font instead.
 
 ## Music source: Last.fm
 

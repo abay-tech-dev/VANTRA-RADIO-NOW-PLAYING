@@ -43,6 +43,8 @@ const STATIONS = {
   rock:   { name: 'Thunder Rock', freq: '98.7', name_c: '#ffd166', lcd: '#ffb000', needle: '#ff3b30', eqFrom: '#ff8a00', eqTo: '#e10600', bg1: '#180a08', bg2: '#2b0d0a', edge: '#ff6a00' },
   hiphop: { name: 'Block Party', freq: '105.9', name_c: '#ffd700', lcd: '#b388ff', needle: '#ffd700', eqFrom: '#7c4dff', eqTo: '#ff2e88', bg1: '#120a24', bg2: '#22103a', edge: '#ffd700' },
   lofi:   { name: 'Chill Wave',  freq: '88.1',  name_c: '#d6c6f2', lcd: '#9be7c4', needle: '#ffb4a2', eqFrom: '#a0c4ff', eqTo: '#ffc6ff', bg1: '#141a2e', bg2: '#1f2440', edge: '#a0c4ff' },
+  // Sunset FM: open-world crime look — sunset sky, palm trees, bold outlined logo
+  sunset: { name: 'SUNSET FM',   freq: '96.9',  name_c: '#ffffff', lcd: '#2de2e6', needle: '#ff3fa4', eqFrom: '#ff3fa4', eqTo: '#ffffff', bg1: '#2a0b4a', bg2: '#ff8a3d', edge: '#ffc857' },
 };
 
 let current   = { key: null, title: '', artist: '' };
@@ -103,7 +105,13 @@ function applyConfig() {
   r.setProperty('--bg2', p.bg2);
   r.setProperty('--edge', p.edge);
 
-  document.getElementById('station').textContent = CONFIG.stationName || p.name;
+  const st = document.getElementById('station');
+  const isSunset = CONFIG.station === 'sunset';
+  st.textContent = CONFIG.stationName || p.name;
+  document.getElementById('radio-widget').classList.toggle('sunset', isSunset);
+  // the SUNSET FM logo is a picture (no font file shipped); a custom name uses the text style instead
+  const logo = getComputedStyle(document.documentElement).getPropertyValue('--sunset-logo').trim();
+  st.classList.toggle('has-logo', isSunset && !CONFIG.stationName && !!logo && logo !== 'none');
   document.getElementById('freq').textContent = stationFreq().toFixed(1);
   placeNeedle(stationFreq());
   fitScale();
