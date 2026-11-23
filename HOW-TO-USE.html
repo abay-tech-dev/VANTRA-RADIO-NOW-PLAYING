@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radio Now Playing — Setup guide · VANTRA STUDIO</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&family=Kanit:ital,wght@1,900&display=swap" rel="stylesheet">
+<style>
+:root{--acc:#ff3fa4;--teal:#2de2e6;--gold:#ffc857;--coral:#ff6b5b;--indigo:#5b4bff;--bg:#12061f;--card:#1e0c35;--line:#3a1d5c;--text:#f3e9ff;--muted:#b9a8d6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',system-ui,sans-serif;font-size:18px;line-height:1.6}
+a{color:var(--teal)}
+.bar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:14px 28px;background:rgba(18,6,31,.92);backdrop-filter:blur(8px);border-bottom:3px solid transparent;border-image:linear-gradient(90deg,var(--indigo),var(--coral)) 1}
+.brand{font-weight:700;letter-spacing:6px}.brand span{color:var(--coral);margin:0 10px}.brand em{font-style:normal;letter-spacing:1px;font-weight:500;color:#d9d4ff}
+.bar nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:15px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px 80px}
+.hero{display:grid;grid-template-columns:1fr 1.15fr;gap:32px;align-items:center;padding:48px 0 24px}
+.hero h1{font-size:52px;line-height:1.05}.hero h1 b{font-family:Kanit;font-style:italic;background:linear-gradient(180deg,#fff6d8,var(--gold) 45%,#ff8a3d 65%,var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);font-size:20px;margin-top:12px}
+.pill{display:inline-block;margin-top:18px;padding:6px 14px;border-radius:999px;border:2px solid var(--acc);color:var(--acc);font-weight:700;font-size:14px;letter-spacing:2px}
+.preview{position:relative;aspect-ratio:16/9;border-radius:18px;overflow:hidden;border:2px solid var(--line);background:linear-gradient(180deg,#1a0533,#4a0f5c 45%,#c2306e 68%,#ff8a3d 80%,#12061f 80.3%)}
+.preview iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+h2{font-size:32px;margin:56px 0 8px;display:flex;align-items:center;gap:14px}
+h2 .n{display:inline-flex;min-width:44px;height:44px;padding:0 8px;border-radius:12px;background:var(--acc);color:#12061f;align-items:center;justify-content:center;font-size:24px}
+h3{font-size:22px;margin:24px 0 6px;color:var(--teal)}
+.lead{color:var(--muted)}
+.card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:22px 26px;margin-top:16px}
+.tree{font-family:'JetBrains Mono',monospace;font-size:16px;line-height:1.9;white-space:pre}
+.tree b{color:var(--teal)}.tree i{font-style:normal;font-family:'Space Grotesk';color:var(--muted);margin-left:18px;font-size:15px}
+ol.steps{counter-reset:s;list-style:none;margin-top:12px}
+ol.steps>li{counter-increment:s;position:relative;padding:14px 0 14px 58px;border-bottom:1px dashed var(--line)}
+ol.steps>li::before{content:counter(s);position:absolute;left:0;top:12px;width:40px;height:40px;border-radius:50%;border:2px solid var(--acc);color:var(--acc);font-weight:700;display:flex;align-items:center;justify-content:center}
+kbd{font-family:'JetBrains Mono';background:#fff;color:#111;border-radius:6px;padding:1px 8px;box-shadow:0 3px 0 #999;font-size:15px;font-weight:700}
+code{font-family:'JetBrains Mono';background:#2a1450;border-radius:6px;padding:1px 7px;font-size:15px;color:#fff}
+.tip{margin-top:14px;padding:14px 18px;border-left:4px solid var(--gold);background:rgba(255,200,87,.08);border-radius:8px}.tip b{color:var(--gold)}
+.methods{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:16px}
+.method{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:22px}.method.best{border-color:var(--acc)}
+.method h4{font-size:22px}.method ul{margin:10px 0 0 20px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;margin-top:14px}td,th{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:500}
+td.st{color:var(--gold);letter-spacing:2px;text-shadow:0 0 8px var(--acc)}
+.copy{margin-top:16px;background:var(--card);border:2px solid var(--line);border-radius:16px;overflow:hidden}
+.copy-head{display:flex;align-items:center;gap:14px;padding:14px 18px}.copy-head div{flex:1}.acc{color:var(--acc)}
+.num{display:inline-flex;width:34px;height:34px;border-radius:50%;background:var(--acc);color:#12061f;font-weight:700;align-items:center;justify-content:center;flex-shrink:0}
+.copy button{font:inherit;font-weight:700;padding:9px 18px;border-radius:10px;border:0;background:var(--acc);color:#12061f;cursor:pointer}.copy button.done{background:#fff}
+.copy textarea{width:100%;height:100px;border:0;border-top:2px solid var(--line);background:#160828;color:#d8cdf2;font-family:'JetBrains Mono';font-size:12px;padding:12px 18px;resize:vertical}
+details{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:14px 20px;margin-top:12px}summary{cursor:pointer;font-weight:700}details p{margin-top:8px;color:var(--muted)}
+.foot{margin-top:60px;padding:28px;border-radius:18px;background:linear-gradient(120deg,rgba(91,75,255,.25),rgba(255,107,91,.2));text-align:center}
+@media (max-width:820px){.hero,.methods{grid-template-columns:1fr}.hero h1{font-size:38px}.tree{font-size:13px}}
+</style>
+</head>
+<body>
+<div class="bar"><div class="brand">VANTRA STUDIO<span>·</span><em>Radio Now Playing</em></div>
+<nav><a href="#folder">Files</a><a href="#lastfm">Last.fm</a><a href="#obs">OBS</a><a href="#se">StreamElements</a><a href="#help">Help</a></nav></div>
+<div class="wrap">
+<div class="hero">
+  <div>
+    <h1>Radio Now Playing<br><b>setup guide</b></h1>
+    <p>Never installed a widget before? This guide is for you. About 10 minutes, no code. Your music becomes a neon FM station on your stream.</p>
+    <span class="pill">BEGINNER FRIENDLY · ~10 MIN</span>
+    <p style="margin-top:16px">Prefer a video? Open <a href="HOW-TO-USE.mp4"><b>HOW-TO-USE.mp4</b></a> in the same folder.</p>
+  </div>
+  <div class="preview"><iframe src="widget/index.html?demo=1&staticSound=false" title="Live preview" style="inset:auto;left:4%;top:50%;width:92%;height:auto;aspect-ratio:520/124;transform:translateY(-50%)"></iframe></div>
+</div>
+
+<h2><span class="n">★</span>How it works</h2>
+<div class="card"><table>
+<tr><th>Station</th><th>Style</th><th>Frequency</th></tr>
+<tr><td>Neon FM</td><td>Synthwave (default)</td><td class="st">103.5</td></tr>
+<tr><td>Thunder Rock</td><td>Rock</td><td class="st">98.7</td></tr>
+<tr><td>Block Party</td><td>Hip-hop</td><td class="st">105.9</td></tr>
+<tr><td>Chill Wave</td><td>Lo-fi</td><td class="st">88.1</td></tr>
+</table></div>
+<p class="lead" style="margin-top:10px">The radio shows the song marked <b>"Scrobbling now"</b> on your <b>Last.fm</b> profile, checked every few seconds. On every new song, the needle sweeps the dial with a short radio static, then the new title appears. Long titles scroll. The name, the frequency and the colours can be changed.</p>
+
+<h2 id="folder"><span class="n">1</span>Unzip the file</h2>
+<p class="lead">On Etsy, go to <b>You › Purchases</b> and download the ZIP. Right-click it › <b>Extract all</b>. Keep every file in the same folder, don't rename anything.</p>
+<div class="card tree"><div><b>Radio-Now-Playing/</b><i>the folder you get after unzipping</i></div><div><b>├── index.html</b><i>the configurator: double-click it first</i></div><div><b>├── preview-standalone.html</b><i>a quick preview, nothing to set up</i></div><div><b>├── HOW-TO-USE.html</b><i>the beginner guide</i></div><div><b>├── HOW-TO-USE.mp4</b><i>the same guide, as a video</i></div><div><b>├── README.md</b><i>quick notes</i></div><div><b>├── widget/</b><i>the radio (used by the OBS link)</i></div><div><b>└── streamelements/</b><i>files to paste into StreamElements</i></div><div><b>    └── se-html · se-css · se-js · se-fields</b><i></i></div><div><b>(build-streamelements.py)</b><i>only if you want to edit the code</i></div></div>
+<div class="tip"><b>Tip:</b> put this folder somewhere safe, like <code>Documents</code>. The OBS links point to these files: if you move the folder, copy the links again.</div>
+
+<h2 id="lastfm"><span class="n">2</span>Connect your music to Last.fm (once)</h2>
+<p class="lead">The radio reads your music through <b>Last.fm</b> (free). You only do this once.</p>
+<ol class="steps">
+  <li>Create a free account on <b>last.fm</b>.</li>
+  <li><b>Spotify:</b> on last.fm, click your picture › <b>Settings</b> › <b>Applications</b>. On the <b>Spotify Scrobbling</b> line, click <b>Connect</b> and accept.</li>
+  <li>Play a song. Open your Last.fm profile: the song must appear at the top of <b>Recent Tracks</b> with <b>"Scrobbling now"</b>.</li>
+  <li><b>Settings › Privacy</b>: make sure <b>"Hide recent listening information"</b> is <b>unticked</b>.</li>
+  <li>Go to <code>last.fm/api/account/create</code>. Type your email, any application name (like <code>My stream radio</code>) and description. Leave <b>Callback URL</b> and <b>Homepage</b> empty. Click <b>Submit</b>.</li>
+  <li>Copy the <b>API key</b> (32 characters). <b>Not</b> the "Shared secret". Keep it private: don't show it on stream.</li>
+</ol>
+<div class="tip"><b>Spotify tip:</b> a <b>private session</b> in Spotify doesn't send anything to Last.fm. Turn it off if the radio stays empty.</div>
+
+<h2><span class="n">3</span>Choose how you want to use it</h2>
+<div class="methods">
+  <div class="method best"><h4>A · OBS only (easiest)</h4><ul><li>No StreamElements account</li><li>One link to paste</li><li>Your Last.fm name + API key in the link</li></ul></div>
+  <div class="method"><h4>B · StreamElements</h4><ul><li>Free StreamElements account</li><li>Settings in the StreamElements editor</li><li>4 copy-pastes, once</li></ul></div>
+</div>
+
+<h2 id="obs"><span class="n">A</span>OBS only</h2>
+<ol class="steps">
+  <li>Double-click <code>index.html</code>. It opens in your browser: this is the <b>configurator</b>, with a live preview.</li>
+  <li>Pick a <b>station</b>: Neon FM, Thunder Rock, Block Party or Chill Wave. Change the name, frequency or colours if you want.</li>
+  <li><b>Music source</b>: Last.fm. Type your <b>Last.fm username</b> (the one on your profile, not your email) and paste your <b>API key</b>.</li>
+  <li>Play a song, then click <b>Test my Last.fm</b>. It shows the song, or tells you what to fix (see "Something doesn't work?" below).</li>
+  <li>Click <b>Copy the OBS link</b>.</li>
+  <li>In <b>OBS Studio</b>: <b>Sources</b> › <b>+</b> › <b>Browser</b> › OK. Paste the link in <b>URL</b> (<kbd>Ctrl</kbd> + <kbd>V</kbd>), size <b>520 × 110</b> (or 1040 × 220 for a bigger, sharper banner). Click OK and place it.</li>
+  <li>Tick <b>Control audio via OBS</b> in the source to set the static volume in the OBS mixer.</li>
+</ol>
+<div class="tip"><b>Good to know:</b> a new song shows up <b>5 to 10 seconds</b> after it starts: the radio checks Last.fm every 8 seconds. Want to see it right away? Open <code>preview-standalone.html</code>: nothing to set up.</div>
+
+<h2 id="se"><span class="n">B</span>StreamElements: copy-paste</h2>
+<ol class="steps">
+  <li>Go to <b>streamelements.com</b> and log in.</li>
+  <li><b>Streaming tools › Overlays › New overlay</b> (1920 × 1080).</li>
+  <li>Click <b>+</b> (Add widget) › <b>Static / Custom</b> › <b>Custom widget</b>, select it, click <b>Open editor</b>.</li>
+  <li>For each of the 4 files below: click the tab, select everything inside (<kbd>Ctrl</kbd> + <kbd>A</kbd>), paste (<kbd>Ctrl</kbd> + <kbd>V</kbd>). Leave the <b>DATA</b> tab as it is. Click <b>Done</b>.</li>
+  <li>In the left panel: pick the <b>station</b>, type your <b>Last.fm username</b> and paste your <b>API key</b>.</li>
+  <li>Size the widget <b>520 × 110</b> (or 1040 × 220) and place it. Click <b>Save</b>. Play a song: it tunes in after a few seconds.</li>
+  <li>Copy your overlay URL (link button at the top), then in OBS: <b>+</b> › <b>Browser</b> › paste › <b>1920 × 1080</b>.</li>
+</ol>
+<p class="lead">Each button copies a whole file for you: just paste it. You can also open the files with Notepad.</p>
+<div class="copy"><div class="copy-head"><span class="num">1</span><div><b>streamelements/se-html.txt</b> → paste into the <b class="acc">HTML</b> tab</div>
+    <button onclick="copyCode(0, this)">Copy HTML</button></div>
+    <textarea id="code0" readonly>&lt;div id="stage"&gt;
+  &lt;div id="radio-widget" class="radio"&gt;
+
+    &lt;!-- Left: retro car radio --&gt;
+    &lt;div class="deck"&gt;
+      &lt;span class="knob l"&gt;&lt;/span&gt;&lt;span class="knob r"&gt;&lt;/span&gt;
+      &lt;div class="lcd"&gt;
+        &lt;canvas class="static" id="lcd-static" width="120" height="40"&gt;&lt;/canvas&gt;
+        &lt;span class="st"&gt;ST&lt;/span&gt;
+        &lt;span class="freq" id="freq"&gt;103.5&lt;/span&gt;&lt;span class="band"&gt;FM&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div class="dial"&gt;
+        &lt;div class="scale"&gt;
+          &lt;span style="left:0%"&gt;88&lt;/span&gt;&lt;span style="left:20%"&gt;92&lt;/span&gt;&lt;span style="left:40%"&gt;96&lt;/span&gt;
+          &lt;span style="left:60%"&gt;100&lt;/span&gt;&lt;span style="left:80%"&gt;104&lt;/span&gt;&lt;span style="left:100%"&gt;108&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="ticks"&gt;&lt;/div&gt;
+        &lt;div class="needle" id="needle"&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Center: station + now playing --&gt;
+    &lt;div class="info"&gt;
+      &lt;canvas class="static" id="info-static" width="200" height="80"&gt;&lt;/canvas&gt;
+      &lt;div class="station" id="station"&gt;Neon FM&lt;/div&gt;
+      &lt;div class="line title"&gt;&lt;span class="marquee" id="title"&gt;Tuning in…&lt;/span&gt;&lt;/div&gt;
+      &lt;div class="line artist"&gt;&lt;span class="marquee" id="artist"&gt;&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Right: equalizer --&gt;
+    &lt;div class="eq" id="eq"&gt;&lt;/div&gt;
+
+  &lt;/div&gt;
+&lt;/div&gt;
+</textarea></div><div class="copy"><div class="copy-head"><span class="num">2</span><div><b>streamelements/se-css.txt</b> → paste into the <b class="acc">CSS</b> tab</div>
+    <button onclick="copyCode(1, this)">Copy CSS</button></div>
+    <textarea id="code1" readonly>/* =====================================================
+   VANTRA STUDIO — Radio Now Playing · style.css
+   520 x 110 banner: retro car radio · station + track · 12-bar equalizer
+   ===================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Share+Tech+Mono&amp;family=Yellowtail&amp;display=swap');
+
+:root {
+  /* Set by the station preset (or your own colors) */
+  --name:    #ff3fa4;   /* station name */
+  --lcd:     #2de2e6;   /* LCD digits — cyan */
+  --needle:  #ff8a3d;   /* dial needle — orange */
+  --eq-from: #ff6b5b;   /* equalizer bottom — coral */
+  --eq-to:   #ff2e88;   /* equalizer top — hot pink */
+  --bg1:     #1a0b2e;
+  --bg2:     #2a0f3d;
+  --edge:    #ff3fa4;
+  --text:    #ffffff;
+  --muted:   rgba(255, 255, 255, .7);
+  --scale:   1;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { background: transparent; overflow: hidden; width: 100%; height: 100%; }
+
+#stage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+/* ── The 520 x 110 banner (scaled to fit the browser source) ── */
+.radio {
+  position: relative;
+  flex-shrink: 0;
+  width: 520px;
+  height: 110px;
+  transform: scale(var(--scale));
+  transform-origin: 0 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 14px 8px 8px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--bg1), var(--bg2));
+  border: 2px solid color-mix(in srgb, var(--edge) 70%, transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--edge) 45%, transparent), inset 0 0 18px rgba(0,0,0,.45);
+  font-family: Inter, sans-serif;
+  color: var(--text);
+  overflow: hidden;
+  transition: opacity .4s ease, transform .4s ease;
+}
+.radio.idle-hidden { opacity: 0; }
+
+/* =====================================================
+   LEFT — retro car radio
+   ===================================================== */
+.deck {
+  position: relative;
+  flex-shrink: 0;
+  width: 170px;
+  height: 94px;
+  border-radius: 12px;
+  padding: 7px 26px 6px;
+  background: linear-gradient(180deg, #2b2b33 0%, #15151b 55%, #0d0d12 100%);
+  border: 2px solid #5a5a66;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.25), inset 0 -2px 6px rgba(0,0,0,.6), 0 2px 6px rgba(0,0,0,.5);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Chrome knobs on both sides */
+.knob {
+  position: absolute;
+  top: 24px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f4f4f8, #8c8c99 45%, #3b3b44 80%);
+  box-shadow: 0 1px 2px rgba(0,0,0,.7);
+}
+.knob::after { content: ""; position: absolute; left: 7px; top: 2px; width: 2px; height: 5px; background: #2b2b33; border-radius: 1px; }
+.knob.l { left: 5px; }
+.knob.r { right: 5px; transform: rotate(140deg); }
+
+/* LCD window */
+.lcd {
+  position: relative;
+  height: 42px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #05121a, #020a0f);
+  border: 1px solid #000;
+  box-shadow: inset 0 0 10px rgba(0,0,0,.9);
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 5px;
+  padding-top: 3px;
+  overflow: hidden;
+  font-family: 'Share Tech Mono', monospace;
+  color: var(--lcd);
+  text-shadow: 0 0 6px var(--lcd), 0 0 12px color-mix(in srgb, var(--lcd) 60%, transparent);
+}
+.lcd::after { /* LCD pixel grid */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.25) 0 1px, transparent 1px 3px);
+  pointer-events: none;
+}
+.freq { font-size: 30px; line-height: 36px; letter-spacing: 1px; }
+.band { font-size: 13px; opacity: .85; }
+.st   { position: absolute; left: 6px; top: 3px; font-size: 9px; opacity: .8; }
+
+/* Frequency dial */
+.dial {
+  position: relative;
+  height: 30px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #1b130a, #0e0a06);
+  border: 1px solid #000;
+  box-shadow: inset 0 0 6px rgba(0,0,0,.9);
+  overflow: hidden;
+}
+.scale { position: absolute; left: 8px; right: 8px; top: 2px; height: 10px; }
+.scale span {
+  position: absolute;
+  transform: translateX(-50%);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 8px;
+  line-height: 10px;
+  color: #e9d8b5;
+  opacity: .85;
+}
+.ticks {
+  position: absolute;
+  left: 8px; right: 8px; bottom: 3px;
+  height: 12px;
+  background:
+    repeating-linear-gradient(90deg, rgba(233,216,181,.85) 0 1px, transparent 1px 20%),
+    repeating-linear-gradient(90deg, rgba(233,216,181,.45) 0 1px, transparent 1px 5%);
+  background-size: 100% 100%, 100% 55%;
+  background-repeat: no-repeat;
+  background-position: 0 0, 0 100%;
+}
+.needle {
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  left: 50%;
+  width: 3px;
+  margin-left: -1px;
+  border-radius: 2px;
+  background: var(--needle);
+  box-shadow: 0 0 6px var(--needle), 0 0 12px color-mix(in srgb, var(--needle) 60%, transparent);
+}
+
+/* Radio static (shown 400 ms while tuning) */
+canvas.static { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; z-index: 3; mix-blend-mode: screen; }
+.tuning canvas.static { opacity: .75; }
+
+/* =====================================================
+   CENTER — station name + now playing
+   ===================================================== */
+.info {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 94px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.station {
+  font-family: Yellowtail, cursive;
+  font-size: 30px;
+  line-height: 34px;
+  color: var(--name);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--name) 65%, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 2px 2px;
+}
+
+.line {
+  position: relative;
+  height: 22px;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 16px;
+  line-height: 22px;
+  -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 18px), transparent);
+  mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 18px), transparent);
+}
+.line.title  { font-weight: 700; color: var(--text); }
+.line.artist { font-weight: 400; color: var(--muted); }
+
+.marquee { display: inline-block; padding-right: 2px; transition: opacity .18s ease, transform .18s ease; }
+.marquee.scroll { animation: marquee var(--dur, 10s) linear infinite; padding-right: 0; }
+.marquee .gap { display: inline-block; width: 48px; }
+@keyframes marquee {
+  0%, 12% { transform: translateX(0); }
+  100%    { transform: translateX(var(--shift)); }
+}
+
+.tuning .marquee { opacity: 0; transform: translateY(4px); }
+
+/* =====================================================
+   RIGHT — 12-bar equalizer
+   ===================================================== */
+.eq {
+  flex-shrink: 0;
+  width: 106px;
+  height: 74px;
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+}
+.eq i {
+  flex: 1;
+  height: 8%;
+  border-radius: 2px 2px 1px 1px;
+  background: linear-gradient(0deg, var(--eq-from), var(--eq-to));
+  box-shadow: 0 0 6px color-mix(in srgb, var(--eq-to) 45%, transparent);
+  transition: height .09s linear;
+}
+</textarea></div><div class="copy"><div class="copy-head"><span class="num">3</span><div><b>streamelements/se-js.txt</b> → paste into the <b class="acc">JS</b> tab</div>
+    <button onclick="copyCode(2, this)">Copy JS</button></div>
+    <textarea id="code2" readonly>// =====================================================
+//   VANTRA STUDIO — Radio Now Playing · script.js
+//   Shows the streamer's music as a fictional FM station.
+//   Source: Last.fm "now playing" (any music app connected to Last.fm) or manual text.
+// =====================================================
+
+const CONFIG = {
+  // Station
+  station:       'neon',          // neon | rock | hiphop | lofi
+  stationName:   '',              // empty = name of the preset (e.g. "Neon FM")
+  frequency:     '',              // empty = frequency of the preset (e.g. "103.5")
+
+  // Music source
+  source:        'lastfm',        // lastfm | manual
+  lastfmUser:    '',
+  lastfmKey:     '',
+  manualTitle:   'Midnight Drive',
+  manualArtist:  'Vantra Studio',
+  pollSeconds:   8,
+
+  // Behaviour
+  idleMode:      'message',       // message | last (last track played) | hide
+  idleText:      'Waiting for the next track…',
+  hideWhenIdle:  false,           // old setting, same as idleMode "hide"
+  staticSound:   true,
+  staticVolume:  30,
+  scrollSpeed:   40,              // px per second for long titles
+  fitToSource:   true,            // scale the 520x110 banner to the browser source width
+
+  // Optional color overrides (empty = preset colors)
+  nameColor:     '',
+  lcdColor:      '',
+  needleColor:   '',
+  eqFrom:        '',
+  eqTo:          '',
+};
+
+const DEFAULTS = { ...CONFIG };
+
+// Station presets — only names and colors change
+const STATIONS = {
+  neon:   { name: 'Neon FM',     freq: '103.5', name_c: '#ff3fa4', lcd: '#2de2e6', needle: '#ff8a3d', eqFrom: '#ff6b5b', eqTo: '#ff2e88', bg1: '#1a0b2e', bg2: '#2a0f3d', edge: '#ff3fa4' },
+  rock:   { name: 'Thunder Rock', freq: '98.7', name_c: '#ffd166', lcd: '#ffb000', needle: '#ff3b30', eqFrom: '#ff8a00', eqTo: '#e10600', bg1: '#180a08', bg2: '#2b0d0a', edge: '#ff6a00' },
+  hiphop: { name: 'Block Party', freq: '105.9', name_c: '#ffd700', lcd: '#b388ff', needle: '#ffd700', eqFrom: '#7c4dff', eqTo: '#ff2e88', bg1: '#120a24', bg2: '#22103a', edge: '#ffd700' },
+  lofi:   { name: 'Chill Wave',  freq: '88.1',  name_c: '#d6c6f2', lcd: '#9be7c4', needle: '#ffb4a2', eqFrom: '#a0c4ff', eqTo: '#ffc6ff', bg1: '#141a2e', bg2: '#1f2440', edge: '#a0c4ff' },
+};
+
+let current   = { key: null, title: '', artist: '' };
+let playing   = false;
+let pollTimer = null;
+
+// =====================================================
+//   StreamElements
+// =====================================================
+
+window.addEventListener('onWidgetLoad', ({ detail }) =&gt; {
+  if (detail?.fieldData) applyFields(detail.fieldData);
+  applyConfig();
+});
+
+// =====================================================
+//   Settings
+// =====================================================
+
+function coerce(key, value) {
+  const def = DEFAULTS[key];
+  if (typeof def === 'number')  return Number.isFinite(+value) ? +value : def;
+  if (typeof def === 'boolean') return value === true || value === 'true' || value === '1' || value === 1;
+  return value == null ? def : String(value);
+}
+
+function applyFields(f) {
+  Object.keys(f || {}).forEach(k =&gt; { if (k in DEFAULTS) CONFIG[k] = coerce(k, f[k]); });
+  if (CONFIG.hideWhenIdle) CONFIG.idleMode = 'hide';
+  if (!['lastfm', 'manual'].includes(CONFIG.source)) CONFIG.source = 'lastfm';
+}
+
+function applyUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  const f = {};
+  params.forEach((v, k) =&gt; { f[k] = v; });
+  applyFields(f);
+  return [...params.keys()].length &gt; 0;
+}
+
+const validHex = c =&gt; (typeof c === 'string' &amp;&amp; /^#[0-9a-f]{6}$/i.test(c) ? c : '');
+
+function preset() { return STATIONS[CONFIG.station] || STATIONS.neon; }
+function stationFreq() {
+  const f = parseFloat(String(CONFIG.frequency || preset().freq).replace(',', '.'));
+  return Number.isFinite(f) ? Math.min(108, Math.max(88, f)) : 103.5;
+}
+
+function applyConfig() {
+  const p = preset();
+  const r = document.documentElement.style;
+  r.setProperty('--name',    validHex(CONFIG.nameColor)   || p.name_c);
+  r.setProperty('--lcd',     validHex(CONFIG.lcdColor)    || p.lcd);
+  r.setProperty('--needle',  validHex(CONFIG.needleColor) || p.needle);
+  r.setProperty('--eq-from', validHex(CONFIG.eqFrom)      || p.eqFrom);
+  r.setProperty('--eq-to',   validHex(CONFIG.eqTo)        || p.eqTo);
+  r.setProperty('--bg1', p.bg1);
+  r.setProperty('--bg2', p.bg2);
+  r.setProperty('--edge', p.edge);
+
+  document.getElementById('station').textContent = CONFIG.stationName || p.name;
+  document.getElementById('freq').textContent = stationFreq().toFixed(1);
+  placeNeedle(stationFreq());
+  fitScale();
+  startSource();
+}
+
+function fitScale() {
+  const s = CONFIG.fitToSource ? Math.max(0.2, window.innerWidth / 520) : 1;
+  document.documentElement.style.setProperty('--scale', String(s));
+}
+window.addEventListener('resize', fitScale);
+
+// =====================================================
+//   Dial needle
+// =====================================================
+
+const needlePos = f =&gt; `calc(8px + (100% - 16px) * ${(f - 88) / 20})`;
+
+function placeNeedle(f) {
+  document.getElementById('needle').style.left = needlePos(f);
+}
+
+// =====================================================
+//   Track change: needle sweep + 400 ms radio static, then the new title
+// =====================================================
+
+const TUNE_MS = 400;
+
+function showTrack(title, artist, isLast = false) {
+  title = String(title || '').trim();
+  artist = String(artist || '').trim();
+  const key = `${title}␟${artist}␟${isLast}`;
+  if (key === current.key) return;
+  current = { key, title, artist };
+  setPlaying(!!title &amp;&amp; !isLast);
+
+  const radio = document.getElementById('radio-widget');
+  radio.classList.remove('idle-hidden');
+  radio.classList.add('tuning');
+
+  const f = stationFreq();
+  const needle = document.getElementById('needle');
+  needle.animate([
+    { left: needlePos(f) },
+    { left: needlePos(88.6), offset: 0.3 },
+    { left: needlePos(107.4), offset: 0.75 },
+    { left: needlePos(f) },
+  ], { duration: TUNE_MS, easing: 'ease-in-out' });
+
+  playStatic();
+  runStaticCanvas(TUNE_MS);
+
+  setTimeout(() =&gt; {
+    setLine('title', title || CONFIG.idleText);
+    setLine('artist', title ? (isLast ? `Last played · ${artist}` : artist) : '');
+    radio.classList.remove('tuning');
+    if (!title &amp;&amp; CONFIG.idleMode === 'hide') radio.classList.add('idle-hidden');
+    notifyParent('track', { title, artist });
+  }, TUNE_MS);
+}
+
+// Nothing playing: message, last track played, or hidden (see "idleMode")
+function showIdle(last) {
+  if (CONFIG.idleMode === 'last' &amp;&amp; last &amp;&amp; last.title) { showTrack(last.title, last.artist, true); return; }
+  if (current.key === '␟␟false') return;
+  showTrack('', '');
+}
+
+// Long titles scroll (marquee); short ones stay still
+function setLine(id, text) {
+  const el = document.getElementById(id);
+  el.classList.remove('scroll');
+  el.style.removeProperty('--shift');
+  el.textContent = text;
+  requestAnimationFrame(() =&gt; {
+    const box = el.parentElement.clientWidth;
+    const w = el.scrollWidth;
+    if (w &gt; box - 4) {
+      el.innerHTML = `${esc(text)}&lt;span class="gap"&gt;&lt;/span&gt;${esc(text)}&lt;span class="gap"&gt;&lt;/span&gt;`;
+      const shift = w + 48;
+      el.style.setProperty('--shift', `-${shift}px`);
+      el.style.setProperty('--dur', `${Math.max(4, shift / Math.max(10, CONFIG.scrollSpeed)) / 0.88}s`);
+      el.classList.add('scroll');
+    }
+  });
+}
+
+const esc = s =&gt; String(s).replace(/&amp;/g, '&amp;amp;').replace(/&lt;/g, '&amp;lt;').replace(/&gt;/g, '&amp;gt;');
+
+// Visual static (noise) on the LCD and the text area
+function runStaticCanvas(ms) {
+  const canvases = [...document.querySelectorAll('canvas.static')];
+  const end = performance.now() + ms;
+  const draw = () =&gt; {
+    canvases.forEach(c =&gt; {
+      const ctx = c.getContext('2d');
+      const img = ctx.createImageData(c.width, c.height);
+      for (let i = 0; i &lt; img.data.length; i += 4) {
+        const v = Math.random() &lt; 0.5 ? 0 : Math.random() * 255;
+        img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+        img.data[i + 3] = Math.random() &lt; 0.6 ? 200 : 0;
+      }
+      ctx.putImageData(img, 0, 0);
+    });
+    if (performance.now() &lt; end) requestAnimationFrame(draw);
+  };
+  draw();
+}
+
+// Radio "crackle": 400 ms of filtered white noise (Web Audio, no file needed)
+let audioCtx = null;
+function playStatic() {
+  if (!CONFIG.staticSound || !(CONFIG.staticVolume &gt; 0)) return;
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const len = Math.floor(audioCtx.sampleRate * TUNE_MS / 1000);
+    const buf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i &lt; len; i++) {
+      const crackle = Math.random() &lt; 0.004 ? (Math.random() * 2 - 1) * 3 : 0;   // little pops
+      d[i] = (Math.random() * 2 - 1) * 0.55 + crackle;
+    }
+    const src = audioCtx.createBufferSource();
+    src.buffer = buf;
+    const band = audioCtx.createBiquadFilter();
+    band.type = 'bandpass';
+    band.frequency.setValueAtTime(900, audioCtx.currentTime);
+    band.frequency.linearRampToValueAtTime(3200, audioCtx.currentTime + TUNE_MS / 1000);   // the "sweep"
+    band.Q.value = 0.8;
+    const gain = audioCtx.createGain();
+    const v = Math.min(1, CONFIG.staticVolume / 100) * 0.6;
+    gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(v, audioCtx.currentTime + 0.04);
+    gain.gain.setValueAtTime(v, audioCtx.currentTime + TUNE_MS / 1000 - 0.08);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + TUNE_MS / 1000);
+    src.connect(band).connect(gain).connect(audioCtx.destination);
+    src.start();
+  } catch (_) { /* audio not allowed: the visual static still plays */ }
+}
+
+// =====================================================
+//   Equalizer — 12 animated bars (lively while music plays, resting when idle)
+// =====================================================
+
+const BARS = 12;
+const bars = [];
+let eqLevels = new Array(BARS).fill(0.08);
+
+function buildEq() {
+  const eq = document.getElementById('eq');
+  eq.innerHTML = '';
+  for (let i = 0; i &lt; BARS; i++) { const b = document.createElement('i'); eq.appendChild(b); bars.push(b); }
+}
+
+function setPlaying(on) { playing = on; }
+
+let lastEq = 0;
+function eqLoop(t) {
+  if (t - lastEq &gt; 90) {
+    lastEq = t;
+    const beat = 0.55 + 0.45 * Math.abs(Math.sin(t / 260));
+    for (let i = 0; i &lt; BARS; i++) {
+      // bass on the left is taller, treble on the right is livelier
+      const shape = 1 - Math.abs(i - 3.5) / 11;
+      const target = playing ? Math.min(1, (0.25 + Math.random() * 0.75) * shape * beat + 0.08) : 0.06 + Math.random() * 0.04;
+      eqLevels[i] += (target - eqLevels[i]) * (playing ? 0.75 : 0.3);
+      bars[i].style.height = `${Math.round(eqLevels[i] * 100)}%`;
+    }
+  }
+  requestAnimationFrame(eqLoop);
+}
+
+// =====================================================
+//   Music sources
+// =====================================================
+
+function stopSources() {
+  clearInterval(pollTimer);
+  pollTimer = null;
+}
+
+function status(msg, ok = true) { notifyParent('status', { msg, ok }); }
+
+function startSource() {
+  stopSources();
+
+  if (CONFIG.source === 'manual') {
+    showTrack(CONFIG.manualTitle, CONFIG.manualArtist);
+    status('Manual mode: showing your own text.');
+    return;
+  }
+
+  if (!CONFIG.lastfmUser || !CONFIG.lastfmKey) { status('Last.fm: add your username and API key.', false); showIdle(); return; }
+  const every = Math.max(4, +CONFIG.pollSeconds || 8) * 1000;
+  const poll = () =&gt; pollLastfm().catch(() =&gt; status('Last.fm: no answer right now (internet or Last.fm down). Trying again…', false));
+  poll();
+  pollTimer = setInterval(poll, every);
+}
+
+// Last.fm error codes → plain-English help
+const LASTFM_ERRORS = {
+  6:  'Last.fm: username not found. Check the spelling of your Last.fm username.',
+  10: 'Last.fm: invalid API key. Copy the 32-character "API key" again (not the shared secret).',
+  17: 'Last.fm: your listening history is private. Untick "Hide recent listening information" in your Last.fm privacy settings.',
+  26: 'Last.fm: this API key was suspended. Create a new one.',
+  29: 'Last.fm: too many checks. Raise "Check every" to 8 seconds or more.',
+};
+
+// Last.fm — the track marked "now playing" by your Last.fm profile
+async function pollLastfm() {
+  const url = 'https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&amp;limit=1&amp;format=json'
+    + `&amp;user=${encodeURIComponent(CONFIG.lastfmUser.trim())}&amp;api_key=${encodeURIComponent(CONFIG.lastfmKey.trim())}`;
+  const res = await fetch(url, { cache: 'no-store' });
+  const data = await res.json();
+  if (data.error) { status(LASTFM_ERRORS[data.error] || `Last.fm: ${data.message || 'error'}`, false); showIdle(); return; }
+  const tr = [].concat(data?.recenttracks?.track || [])[0];
+  const track = tr ? { title: tr.name, artist: tr.artist?.['#text'] || tr.artist?.name || '' } : null;
+  if (tr &amp;&amp; tr['@attr'] &amp;&amp; tr['@attr'].nowplaying === 'true') {
+    showTrack(track.title, track.artist);
+    status(`Last.fm: now playing for ${CONFIG.lastfmUser}.`);
+  } else {
+    showIdle(track);
+    status(`Last.fm: connected to ${CONFIG.lastfmUser} — nothing playing right now. Start a song and wait a few seconds.`);
+  }
+}
+
+// =====================================================
+//   Configurator bridge
+// =====================================================
+
+function notifyParent(type, payload) {
+  try { window.parent.postMessage({ type: `radio:${type}`, ...payload }, '*'); } catch (_) {}
+}
+
+window.addEventListener('message', ({ data }) =&gt; {
+  if (!data || typeof data.type !== 'string') return;
+  if (data.type === 'cmd:config') { applyFields(data.config || {}); applyConfig(); }
+  if (data.type === 'cmd:track')  { showTrack(data.title, data.artist); }
+  if (data.type === 'cmd:idle')   { showIdle(); }
+});
+
+// =====================================================
+//   Boot
+// =====================================================
+
+const IS_SE = typeof window.SE_API !== 'undefined' || /streamelements\.com/.test(window.location.href);
+const HAS_PARAMS = applyUrlParams();
+const DEMO = new URLSearchParams(window.location.search).has('demo');
+
+buildEq();
+requestAnimationFrame(eqLoop);
+
+function boot() {
+  // Opened by itself with no settings (or ?demo=1): cycle through a few sample tracks
+  if (DEMO || (!IS_SE &amp;&amp; window === window.top &amp;&amp; !HAS_PARAMS)) {
+    CONFIG.source = 'manual';
+    applyConfig();
+    const demo = [
+      ['Midnight Drive', 'Vantra Studio'],
+      ['Ocean Boulevard Sunset (Extended Night Mix)', 'The Palm Street Collective'],
+      ['Neon Heartbeat', 'Laser Coast'],
+    ];
+    let i = 0;
+    setInterval(() =&gt; { i = (i + 1) % demo.length; showTrack(...demo[i]); }, 6000);
+    showTrack(...demo[0]);
+  } else if (!IS_SE) {
+    applyConfig();
+  }
+  notifyParent('ready', {});
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+else boot();
+</textarea></div><div class="copy"><div class="copy-head"><span class="num">4</span><div><b>streamelements/se-fields.txt</b> → paste into the <b class="acc">FIELDS</b> tab</div>
+    <button onclick="copyCode(3, this)">Copy FIELDS</button></div>
+    <textarea id="code3" readonly>{
+  "station": {
+    "type": "dropdown",
+    "label": "Station style",
+    "value": "neon",
+    "group": "Station",
+    "options": {
+      "neon": "Neon FM 103.5 (synthwave)",
+      "rock": "Thunder Rock 98.7 (rock)",
+      "hiphop": "Block Party 105.9 (hip-hop)",
+      "lofi": "Chill Wave 88.1 (lo-fi)"
+    }
+  },
+  "stationName": {
+    "type": "text",
+    "label": "Station name (empty = style name)",
+    "value": "",
+    "group": "Station"
+  },
+  "frequency": {
+    "type": "text",
+    "label": "Frequency 88–108 (empty = style frequency)",
+    "value": "",
+    "group": "Station"
+  },
+  "source": {
+    "type": "dropdown",
+    "label": "Music source",
+    "value": "lastfm",
+    "group": "Music source",
+    "options": {
+      "lastfm": "Last.fm — your music, live",
+      "manual": "Manual text (no account)"
+    }
+  },
+  "lastfmUser": {
+    "type": "text",
+    "label": "Last.fm username",
+    "value": "",
+    "group": "Music source"
+  },
+  "lastfmKey": {
+    "type": "text",
+    "label": "Last.fm API key (32 characters, not the shared secret)",
+    "value": "",
+    "group": "Music source"
+  },
+  "manualTitle": {
+    "type": "text",
+    "label": "Manual mode — title",
+    "value": "Midnight Drive",
+    "group": "Music source"
+  },
+  "manualArtist": {
+    "type": "text",
+    "label": "Manual mode — artist",
+    "value": "Vantra Studio",
+    "group": "Music source"
+  },
+  "pollSeconds": {
+    "type": "slider",
+    "label": "Check Last.fm every (seconds)",
+    "value": 8,
+    "min": 4,
+    "max": 30,
+    "step": 1,
+    "group": "Music source"
+  },
+  "idleMode": {
+    "type": "dropdown",
+    "label": "When nothing plays",
+    "value": "message",
+    "group": "Behaviour",
+    "options": {
+      "message": "Show a message",
+      "last": "Show the last track played",
+      "hide": "Hide the radio"
+    }
+  },
+  "idleText": {
+    "type": "text",
+    "label": "Message when nothing plays",
+    "value": "Waiting for the next track…",
+    "group": "Behaviour"
+  },
+  "staticSound": {
+    "type": "checkbox",
+    "label": "Radio static sound on track change",
+    "value": true,
+    "group": "Behaviour"
+  },
+  "staticVolume": {
+    "type": "slider",
+    "label": "Static volume",
+    "value": 30,
+    "min": 0,
+    "max": 100,
+    "step": 1,
+    "group": "Behaviour"
+  },
+  "scrollSpeed": {
+    "type": "slider",
+    "label": "Scrolling speed for long titles",
+    "value": 40,
+    "min": 15,
+    "max": 90,
+    "step": 1,
+    "group": "Behaviour"
+  },
+  "fitToSource": {
+    "type": "checkbox",
+    "label": "Scale the radio to the widget width",
+    "value": true,
+    "group": "Behaviour"
+  },
+  "nameColor": {
+    "type": "colorpicker",
+    "label": "Station name color (leave empty = style colors)",
+    "value": "",
+    "group": "Colors"
+  },
+  "lcdColor": {
+    "type": "colorpicker",
+    "label": "LCD color (leave empty = style colors)",
+    "value": "",
+    "group": "Colors"
+  },
+  "needleColor": {
+    "type": "colorpicker",
+    "label": "Needle color (leave empty = style colors)",
+    "value": "",
+    "group": "Colors"
+  },
+  "eqFrom": {
+    "type": "colorpicker",
+    "label": "Equalizer bottom color (leave empty = style colors)",
+    "value": "",
+    "group": "Colors"
+  },
+  "eqTo": {
+    "type": "colorpicker",
+    "label": "Equalizer top color (leave empty = style colors)",
+    "value": "",
+    "group": "Colors"
+  }
+}
+</textarea></div>
+
+<h2><span class="n">✎</span>Make it yours</h2>
+<div class="card"><table><tr><th>What you can change (configurator or StreamElements settings)</th></tr>
+<tr><td>Station: Neon FM, Thunder Rock, Block Party, Chill Wave · your own name and frequency</td></tr>
+<tr><td>Your own colours: name, LCD, needle, equalizer (low and high)</td></tr>
+<tr><td>When nothing plays: a message, the last song played, or hide the radio</td></tr>
+<tr><td>Radio static sound on/off and volume · scrolling speed for long titles</td></tr>
+<tr><td>How often it checks Last.fm (8 seconds by default)</td></tr>
+<tr><td>No Last.fm? <b>Manual text</b>: type the title and artist yourself</td></tr>
+</table></div>
+
+<h2 id="help"><span class="n">?</span>Something doesn't work?</h2>
+<details><summary>"Username not found"</summary><p>Check the spelling of your Last.fm username (the one in your profile address, not your email).</p></details>
+<details><summary>"Invalid API key"</summary><p>Copy the "API key" again (32 characters), not the "Shared secret".</p></details>
+<details><summary>"History is private"</summary><p>Last.fm › Settings › Privacy: untick "Hide recent listening information".</p></details>
+<details><summary>"Nothing playing right now"</summary><p>Start a song and check your Last.fm profile shows "Scrobbling now". On Spotify, turn off the private session.</p></details>
+<details><summary>The song changes late</summary><p>That's normal: 5 to 10 seconds. You can check Last.fm more often (minimum 4 seconds).</p></details>
+<details><summary>It worked, then it's blank in OBS</summary><p>You probably moved the folder. Open index.html again from the new place and copy a new link.</p></details>
+
+<div class="foot"><h3 style="color:#fff;margin:0 0 6px">Still stuck? We've got you.</h3>
+<p>Send us a message on Etsy with a screenshot: we reply within 24 hours.<br>Thank you for choosing <b>VANTRA STUDIO</b>.</p></div>
+</div>
+<script>
+function copyCode(i, btn) {
+  const t = document.getElementById('code' + i);
+  const done = () => { const o = btn.textContent; btn.textContent = '✓ Copied!'; btn.classList.add('done'); setTimeout(() => { btn.textContent = o; btn.classList.remove('done'); }, 1800); };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t.value).then(done, () => { t.select(); document.execCommand('copy'); done(); });
+  else { t.select(); document.execCommand('copy'); done(); }
+}
+</script>
+</body>
+</html>

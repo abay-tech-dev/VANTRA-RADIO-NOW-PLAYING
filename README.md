@@ -8,6 +8,8 @@ A 520 × 110 banner for OBS and StreamElements:
 - **Right:** 12 animated equalizer bars (coral → hot pink)
 - **Track change:** the needle sweeps the dial with 400 ms of radio static (picture + optional sound), then the new title appears
 
+Beginner guide: open `HOW-TO-USE.html` (or watch `HOW-TO-USE.mp4`).
+
 ## Stations
 
 | Style | Default name | Frequency |
