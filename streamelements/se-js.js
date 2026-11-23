@@ -1,7 +1,7 @@
 // =====================================================
 //   VANTRA STUDIO — Radio Now Playing · script.js
 //   Shows the streamer's music as a fictional FM station.
-//   Source: Last.fm "now playing" (Spotify, Apple Music via Web Scrobbler, Deezer…) or manual text.
+//   Source: Last.fm "now playing" (any music app connected to Last.fm) or manual text.
 // =====================================================
 
 const CONFIG = {
@@ -313,7 +313,7 @@ const LASTFM_ERRORS = {
   29: 'Last.fm: too many checks. Raise "Check every" to 8 seconds or more.',
 };
 
-// Last.fm — the track marked "now playing" by your scrobbler (Spotify, Web Scrobbler…)
+// Last.fm — the track marked "now playing" by your Last.fm profile
 async function pollLastfm() {
   const url = 'https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&limit=1&format=json'
     + `&user=${encodeURIComponent(CONFIG.lastfmUser.trim())}&api_key=${encodeURIComponent(CONFIG.lastfmKey.trim())}`;

@@ -22,13 +22,8 @@ The name, the frequency and all the colors can be changed.
 ## Music source: Last.fm
 
 The radio shows the track marked **"now playing"** on your Last.fm profile, checked every few seconds.
-Anything that sends "now playing" to Last.fm works:
-
-| You listen on | How it reaches Last.fm |
-|---|---|
-| **Spotify** (app, phone, web) | Last.fm › Settings › Applications › Spotify Scrobbling › Connect |
-| **Apple Music** | Play on music.apple.com with the free **Web Scrobbler** browser extension connected to Last.fm |
-| **Deezer, YouTube Music, SoundCloud…** in a browser | The **Web Scrobbler** extension |
+Connect your music app to Last.fm once (for example **Spotify**: Last.fm › Settings › Applications ›
+Spotify Scrobbling › Connect). When your profile shows **"Scrobbling now"**, the radio shows the same track.
 
 No Last.fm? Use **Manual text**: type the title and artist yourself.
 
