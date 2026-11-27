@@ -44,6 +44,11 @@ td.st{color:var(--gold);letter-spacing:2px;text-shadow:0 0 8px var(--acc)}
 .copy button{font:inherit;font-weight:700;padding:9px 18px;border-radius:10px;border:0;background:var(--acc);color:#12061f;cursor:pointer}.copy button.done{background:#fff}
 .copy textarea{width:100%;height:100px;border:0;border-top:2px solid var(--line);background:#160828;color:#d8cdf2;font-family:'JetBrains Mono';font-size:12px;padding:12px 18px;resize:vertical}
 details{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:14px 20px;margin-top:12px}summary{cursor:pointer;font-weight:700}details p{margin-top:8px;color:var(--muted)}
+.shot{margin-top:18px;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:20px 22px}
+.shot-h{display:flex;align-items:center;gap:12px;font-size:22px;font-weight:700}
+.sn{display:inline-flex;width:38px;height:38px;border-radius:50%;background:var(--acc);color:#12061f;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.shot p{margin-top:10px}.shot .alt{color:var(--muted);font-size:16px}
+.shot img{display:block;width:100%;margin-top:14px;border-radius:10px;border:2px solid var(--line);background:#fff}
 .foot{margin-top:60px;padding:28px;border-radius:18px;background:linear-gradient(120deg,rgba(91,75,255,.25),rgba(255,107,91,.2));text-align:center}
 @media (max-width:820px){.hero,.methods{grid-template-columns:1fr}.hero h1{font-size:38px}.tree{font-size:13px}}
 </style>
@@ -79,16 +84,46 @@ details{background:var(--card);border:2px solid var(--line);border-radius:14px;p
 <div class="tip"><b>Tip:</b> put this folder somewhere safe, like <code>Documents</code>. The OBS links point to these files: if you move the folder, copy the links again.</div>
 
 <h2 id="lastfm"><span class="n">2</span>Connect your music to Last.fm (once)</h2>
-<p class="lead">The radio reads your music through <b>Last.fm</b> (free). You only do this once.</p>
-<ol class="steps">
-  <li>Create a free account on <b>last.fm</b>.</li>
-  <li><b>Spotify:</b> on last.fm, click your picture › <b>Settings</b> › <b>Applications</b>. On the <b>Spotify Scrobbling</b> line, click <b>Connect</b> and accept.</li>
-  <li>Play a song. Open your Last.fm profile: the song must appear at the top of <b>Recent Tracks</b> with <b>"Scrobbling now"</b>.</li>
-  <li><b>Settings › Privacy</b>: make sure <b>"Hide recent listening information"</b> is <b>unticked</b>.</li>
-  <li>Go to <code>last.fm/api/account/create</code>. Type your email, any application name (like <code>My stream radio</code>) and description. Leave <b>Callback URL</b> and <b>Homepage</b> empty. Click <b>Submit</b>.</li>
-  <li>Copy the <b>API key</b> (32 characters). <b>Not</b> the "Shared secret". Keep it private: don't show it on stream.</li>
-</ol>
-<div class="tip"><b>Spotify tip:</b> a <b>private session</b> in Spotify doesn't send anything to Last.fm. Turn it off if the radio stays empty.</div>
+<p class="lead">The radio finds your music through <b>Last.fm</b>. It's <b>free</b> and you do it <b>only once</b> (about 10 minutes). Follow the pictures: the <b style="color:#ff2e88">pink frames</b> show where to click, the <b style="color:#19c37d">green frames</b> are the right choice.</p>
+<div class="tip"><b>Before you start:</b> use a computer, not a phone. If Last.fm is not in English, scroll to the bottom of any Last.fm page and click <b>English</b>, so the buttons match these pictures.</div>
+
+<div class="shot"><div class="shot-h"><span class="sn">A</span>Create a free Last.fm account</div>
+<p>Open <a href="https://www.last.fm/join" target="_blank">last.fm/join</a>, fill in the form and confirm the email Last.fm sends you. Already have an account? Just log in.</p></div>
+
+<div class="shot"><div class="shot-h"><span class="sn">B</span>Open your Settings, then Applications</div>
+<p>Click <b>your picture</b> at the top right, then <b>Settings</b>. Then click the <b>Applications</b> tab.<br><span class="alt">Shortcut: open <a href="https://www.last.fm/settings/applications" target="_blank">last.fm/settings/applications</a></span></p>
+<img src="guide-images/lastfm-1-settings.png" alt="Last.fm settings: click your picture, then Applications"></div>
+
+<div class="shot"><div class="shot-h"><span class="sn">C</span>Connect Spotify (the right one!)</div>
+<p>There are <b>two</b> Spotify lines. Use <b>Spotify Scrobbling</b> (green), <b>not</b> Spotify Playback (red). Click <b>CONNECT</b>, a Spotify window opens: click <b>Agree</b>. When it's done, the button says <b>DISCONNECT</b>: that means it's connected. Don't click it!</p>
+<img src="guide-images/lastfm-2-spotify.png" alt="Click CONNECT on Spotify Scrobbling, not Spotify Playback"></div>
+
+<div class="shot"><div class="shot-h"><span class="sn">D</span>Make your music visible</div>
+<p>Still in Settings, click the <b>Privacy</b> tab. Find <b>"Hide recent listening information"</b>: the box must be <b>empty</b> (not ticked). Click <b>Save changes</b>.<br><span class="alt">Shortcut: <a href="https://www.last.fm/settings/privacy" target="_blank">last.fm/settings/privacy</a></span></p>
+<img src="guide-images/lastfm-3-privacy.png" alt="Click the Privacy tab"></div>
+
+<div class="shot"><div class="shot-h"><span class="sn">E</span>Check it works</div>
+<p>Play a song on <b>Spotify</b>. Open your Last.fm profile (click your picture). At the top of <b>Recent Tracks</b>, your song shows with <b>"Scrobbling now"</b>. Yes? Perfect, go to F.<br><span class="alt">Nothing? Wait 1 minute and refresh the page. In Spotify, check <b>Private session</b> is OFF.</span></p></div>
+
+<div class="shot"><div class="shot-h"><span class="sn">F</span>Go to the Developer API page</div>
+<p>Scroll to the <b>very bottom</b> of any Last.fm page. In the <b>GOODIES</b> column, click <b>Developer API</b>.</p>
+<img src="guide-images/lastfm-4-developer-api.png" alt="Click Developer API at the bottom of the page"></div>
+
+<div class="shot"><div class="shot-h"><span class="sn">G</span>Click "Get an API account"</div>
+<p>Don't worry about the word "API": it's just a <b>free key</b> that lets the radio read your music.<br><span class="alt">Shortcut: open <a href="https://www.last.fm/api/account/create" target="_blank">last.fm/api/account/create</a></span></p>
+<img src="guide-images/lastfm-5-get-api-account.png" alt="Click Get an API account"></div>
+
+<div class="shot"><div class="shot-h"><span class="sn">H</span>Fill in the form</div>
+<p>Type your <b>email</b>, any <b>name</b> (like <code>My stream radio</code>) and any <b>description</b>. <b>Leave the two other boxes EMPTY.</b> Tick <b>I'm not a robot</b>, then click <b>Submit</b> (just below).</p>
+<img src="guide-images/lastfm-6-form.png" alt="Fill in the Create API account form"></div>
+
+<div class="shot"><div class="shot-h"><span class="sn">I</span>Copy your API key</div>
+<p>You now see your <b>API key</b>: 32 letters and numbers. Select it with the mouse and press <kbd>Ctrl</kbd> + <kbd>C</kbd> (Mac: <kbd>Cmd</kbd> + <kbd>C</kbd>). If you also see a <b>"Shared secret"</b>, <b>don't</b> use it.<br><span class="alt">Lost it? All your keys are here: <a href="https://www.last.fm/api/accounts" target="_blank">last.fm/api/accounts</a>. Keep it private: don't show it on stream.</span></p>
+<img src="guide-images/lastfm-7-api-key.png" alt="Copy the API key"></div>
+
+<div class="shot"><div class="shot-h"><span class="sn">J</span>Paste it in the radio</div>
+<p>Open <code>index.html</code> (the configurator). Type your <b>Last.fm username</b> (the name in your profile, not your email), paste your <b>API key</b> (<kbd>Ctrl</kbd> + <kbd>V</kbd>), play a song, then click <b>Test my Last.fm</b>. <b>Green = it works!</b> A red message tells you exactly what to fix (see "Something doesn't work?" at the bottom).</p>
+<img src="guide-images/lastfm-8-configurator.png" alt="Paste your username and key, then Test my Last.fm"></div>
 
 <h2><span class="n">3</span>Choose how you want to use it</h2>
 <div class="methods">
@@ -118,6 +153,7 @@ details{background:var(--card);border:2px solid var(--line);border-radius:14px;p
   <li>Size the widget <b>520 × 110</b> (or 1040 × 220) and place it. Click <b>Save</b>. Play a song: it tunes in after a few seconds.</li>
   <li>Copy your overlay URL (link button at the top), then in OBS: <b>+</b> › <b>Browser</b> › paste › <b>1920 × 1080</b>.</li>
 </ol>
+<div class="shot"><div class="shot-h"><span class="sn">✓</span>Where to type your Last.fm details in StreamElements</div><img src="guide-images/lastfm-9-streamelements.png" alt="StreamElements widget settings: station, username, API key"></div>
 <p class="lead">Each button copies a whole file for you: just paste it. You can also open the files with Notepad.</p>
 <div class="copy"><div class="copy-head"><span class="num">1</span><div><b>streamelements/se-html.txt</b> → paste into the <b class="acc">HTML</b> tab</div>
     <button onclick="copyCode(0, this)">Copy HTML</button></div>
